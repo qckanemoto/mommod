@@ -1,0 +1,12 @@
+.footer {
+    padding-bottom: 19px;
+}
+
+.clickable {
+    &:hover {
+        filter: alpha(opacity=50);
+        -moz-opacity: 0.5;
+        opacity: 0.5;
+        cursor: pointer;
+    }
+}
