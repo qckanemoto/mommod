@@ -7,9 +7,11 @@ angular
         'ngResource',
         'ngRoute',
         'ngSanitize',
-        'ngTouch'
+        'ngTouch',
+        'hc.marked',
+        'hljs'
     ])
-    .config(function ($routeProvider) {
+    .config(['$routeProvider', 'markedProvider', 'hljsServiceProvider', function ($routeProvider, markedProvider, hljsServiceProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: 'views/main.html',
@@ -26,4 +28,24 @@ angular
             .otherwise({
                 redirectTo: '/'
             });
-    });
+
+        markedProvider
+            .setOptions({
+                gfm: true,
+                tables: true,
+                breaks: true,
+                pedantic: false,
+                sanitize: true,
+                smartLists: true,
+                smartypants: false,
+                highlight: function (code) {
+                    return hljs.highlightAuto(code).value;
+                }
+            });
+
+        hljsServiceProvider
+            .setOptions({
+                tabReplace: '    '
+            });
+    }])
+;
