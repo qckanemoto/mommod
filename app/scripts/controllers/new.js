@@ -1,5 +1,8 @@
 'use strict';
 
 angular.module('mommodApp')
-    .controller('NewCtrl', function ($scope) {
-    });
+    .controller('NewCtrl', ['$scope', function ($scope) {
+        $scope.isEditing = true;
+        $scope.editingContent = '';
+    }])
+;

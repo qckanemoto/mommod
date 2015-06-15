@@ -9,12 +9,17 @@
             </div>
             <div class="form-group">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a ng-href="#/">Edit</a></li>
-                    <li ><a ng-href="#/">Preview</a></li>
+                    <li ng-class="{ active: isEditing }" ng-click="isEditing = true"><a href="">Edit</a></li>
+                    <li ng-class="{ active: !isEditing }" ng-click="isEditing = false"><a href="">Preview</a></li>
                 </ul>
             </div>
-            <div class="form-group">
-                <textarea class="form-control" rows="10" placeholder="Markdown is available"></textarea>
+            <div ng-show="isEditing">
+                <div class="form-group">
+                    <textarea ng-model="editingContent" class="form-control" rows="10" placeholder="Markdown is available"></textarea>
+                </div>
+            </div>
+            <div ng-hide="isEditing">
+                <div marked="editingContent"></div>
             </div>
             <div class="text-right">
                 <button class="btn btn-primary">Submit new thread</button>
