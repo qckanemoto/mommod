@@ -16,28 +16,7 @@
     </div>
 
     <!-- comments -->
-    <div ng-repeat="comment in comments" ng-show="!$parent.replyTo || comment.id <= $parent.replyTo.id" class="panel panel-default" ng-class="{ 'panel-info': $parent.replyTo == comment }">
-        <div class="panel-heading clearfix">
-            <div class="pull-right">
-                <span class="text-muted"><i class="fa fa-clock-o"></i> {{ comment.created_at | date: 'yyyy-MM-dd' }}</span>
-                <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
-            </div>
-        </div>
-        <div class="panel-body">
-            <div marked="comment.content"></div>
-        </div>
-        <ul class="list-group">
-            <li class="list-group-item clearfix">
-                <div class="pull-left">
-                    <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
-                </div>
-                <div class="pull-right">
-                    <span ng-click="$parent.replyTo = comment; " class="btn btn-default btn-sm"><i class="fa fa-reply"></i> Reply</span>
-                    <span class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</span>
-                </div>
-            </li>
-        </ul>
-    </div>
+    <comment-view ng-repeat="comment in comments"></comment-view>
 
     <!-- comment form -->
     <div class="panel panel-default">
