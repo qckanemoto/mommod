@@ -2,80 +2,69 @@
     <h1>{{ topic.title }}</h1>
     <hr/>
 
-    <div ng-repeat="comment in comments">
-        <div class="panel panel-default">
-            <div class="panel-heading clearfix">
-                <div class="pull-right">
-                    <span class="text-muted"><i class="fa fa-clock-o"> {{ topic.created_at | date: 'yyyy-MM-dd' }}</i></span>
-                    <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
-                </div>
-            </div>
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <div marked="comment.content"></div>
-                </li>
-                <li ng-hide="isReplying(comment.id)" class="list-group-item text-right">
-                    <button ng-click="reply(comment.id)" class="btn btn-default btn-sm"><i class="fa fa-reply"></i> Reply</button>
-                    <button class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</button>
-                </li>
-                <li ng-show="isReplying(comment.id)" class="list-group-item">
-                    <div class="form-group">
-                        <ul class="nav nav-tabs">
-                            <li ng-class="{ active: isEditing }" ng-click="isEditing = true"><a href="">Edit</a></li>
-                            <li ng-class="{ active: !isEditing }" ng-click="isEditing = false"><a href="">Preview</a></li>
-                        </ul>
-                    </div>
-                    <div ng-show="isEditing">
-                        <div class="form-group">
-                            <textarea ng-model="editingContent" class="form-control" rows="10" placeholder="Markdown is available"></textarea>
-                        </div>
-                    </div>
-                    <div ng-hide="isEditing">
-                        <div marked="editingContent"></div>
-                    </div>
-                    <div class="text-right">
-                        <button ng-click="cancelReply(comment.id)" class="btn btn-default btn-sm">Cancel</button>
-                        <button class="btn btn-primary btn-sm">Comment</button>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-
+    <!-- topic -->
     <div class="panel panel-default">
-        <div class="panel-heading clearfix clickable">
-            <div class="pull-left">
-                <span class="badge"><i class="fa fa-comment-o"></i> 5</span>
-            </div>
+        <div class="panel-heading clearfix">
             <div class="pull-right">
-                <span class="text-muted"><i class="fa fa-clock-o"> 2015-06-01</i></span>
+                <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.created_at | date: 'yyyy-MM-dd' }}</span>
                 <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
             </div>
         </div>
-        <ul class="list-group">
-            <li class="list-group-item" ng-repeat="i in [1,2]">
-                test
-                <div class="text-right">
-                    <a class="btn btn-default btn-sm" ng-href="#/"><i class="fa fa-reply"></i> Reply</a>
-                    <a class="btn btn-default btn-sm" ng-href="#/"><i class="fa fa-star"></i> 2</a>
-                </div>
-            </li>
-        </ul>
-        <div class="panel-body bg-warning">
-            test
-            <div class="text-right">
-                <a class="btn btn-default btn-sm" ng-href="#/"><i class="fa fa-reply"></i> Reply</a>
-                <a class="btn btn-default btn-sm" ng-href="#/"><i class="fa fa-star-o"></i> 1</a>
+        <div class="panel-body">
+            <div marked="topic.content"></div>
+        </div>
+    </div>
+
+    <!-- comments -->
+    <div ng-repeat="comment in comments" ng-show="!$parent.replyTo || comment.id <= $parent.replyTo.id" class="panel panel-default" ng-class="{ 'panel-info': $parent.replyTo == comment }">
+        <div class="panel-heading clearfix">
+            <div class="pull-right">
+                <span class="text-muted"><i class="fa fa-clock-o"></i> {{ comment.created_at | date: 'yyyy-MM-dd' }}</span>
+                <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
             </div>
         </div>
+        <div class="panel-body">
+            <div marked="comment.content"></div>
+        </div>
         <ul class="list-group">
-            <li class="list-group-item" ng-repeat="i in [1,2]">
-                test
-                <div class="text-right">
-                    <a class="btn btn-default btn-sm" ng-href="#/"><i class="fa fa-reply"></i> Reply</a>
-                    <a class="btn btn-default btn-sm" ng-href="#/"><i class="fa fa-star-o"></i> 1</a>
+            <li class="list-group-item clearfix">
+                <div class="pull-left">
+                    <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
+                </div>
+                <div class="pull-right">
+                    <span ng-click="$parent.replyTo = comment; " class="btn btn-default btn-sm"><i class="fa fa-reply"></i> Reply</span>
+                    <span class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</span>
                 </div>
             </li>
         </ul>
     </div>
+
+    <!-- comment form -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div ng-show="!replyTo"><b><i class="fa fa-comment-o"></i> Leave a comment</b></div>
+            <div ng-show="replyTo"><b><i class="fa fa-reply"></i> Reply to this comment</b></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <ul class="nav nav-tabs">
+                    <li ng-class="{ active: isEditing }" ng-click="isEditing = true"><a href="">Edit</a></li>
+                    <li ng-class="{ active: !isEditing }" ng-click="isEditing = false"><a href="">Preview</a></li>
+                </ul>
+            </div>
+            <div class="form-group">
+                <div ng-show="isEditing">
+                    <textarea ng-model="editingContent" class="form-control" placeholder="Markdown is available" style="min-height: 200px;"></textarea>
+                </div>
+                <div ng-hide="isEditing">
+                    <div marked="editingContent" style="min-height: 200px;"></div>
+                </div>
+            </div>
+            <div class="text-right">
+                <span ng-show="replyTo" ng-click="replyTo = null" class="btn btn-default btn-sm">Cancel replying</span>
+                <span class="btn btn-primary btn-sm">Comment</span>
+            </div>
+        </div>
+    </div>
+
 </div>
