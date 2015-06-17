@@ -1,0 +1,16 @@
+<div class="markdown-editor">
+    <div class="form-group">
+        <ul class="nav nav-tabs">
+            <li ng-class="{ active: isEditing }" ng-click="isEditing = true"><a href="">Edit</a></li>
+            <li ng-class="{ active: !isEditing }" ng-click="isEditing = false"><a href="">Preview</a></li>
+        </ul>
+    </div>
+    <div class="form-group">
+        <div ng-hide="isEditing">
+            <div marked="content" class="preview"></div>
+        </div>
+        <div ng-show="isEditing">
+            <textarea ng-model="content" class="form-control edit" placeholder="Markdown is available"></textarea>
+        </div>
+    </div>
+</div>

@@ -9,12 +9,10 @@ angular.module('mommodApp')
         $scope.comments = mockComments;
 
         $scope.replyTo = null;
+        $scope.commentContent = '';
 
         $scope.isStarred = function (stargazers) {
             return stargazers.indexOf($scope.myUserName) > -1;
         };
-
-        $scope.isEditing = true;
-        $scope.editingContent = '';
     }])
 ;

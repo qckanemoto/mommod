@@ -10,3 +10,9 @@
         cursor: pointer;
     }
 }
+
+.markdown-editor {
+    .edit, .preview {
+        min-height: 200px;
+    }
+}

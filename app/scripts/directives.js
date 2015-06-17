@@ -14,4 +14,17 @@ angular.module('mommodApp')
             }
         };
     })
+    .directive('markdownEditor', function () {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: 'views/directives/markdown-editor.html',
+            scope: {
+                content: '='
+            },
+            link: function (scope, elem, attr) {
+                scope.isEditing = true;
+            }
+        };
+    })
 ;

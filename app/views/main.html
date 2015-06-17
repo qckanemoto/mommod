@@ -25,20 +25,7 @@
             <div ng-show="replyTo"><b><i class="fa fa-reply"></i> Reply to this comment</b></div>
         </div>
         <div class="panel-body">
-            <div class="form-group">
-                <ul class="nav nav-tabs">
-                    <li ng-class="{ active: isEditing }" ng-click="isEditing = true"><a href="">Edit</a></li>
-                    <li ng-class="{ active: !isEditing }" ng-click="isEditing = false"><a href="">Preview</a></li>
-                </ul>
-            </div>
-            <div class="form-group">
-                <div ng-show="isEditing">
-                    <textarea ng-model="editingContent" class="form-control" placeholder="Markdown is available" style="min-height: 200px;"></textarea>
-                </div>
-                <div ng-hide="isEditing">
-                    <div marked="editingContent" style="min-height: 200px;"></div>
-                </div>
-            </div>
+            <markdown-editor content="commentContent"></markdown-editor>
             <div class="text-right">
                 <span ng-show="replyTo" ng-click="replyTo = null" class="btn btn-default btn-sm">Cancel replying</span>
                 <span class="btn btn-primary btn-sm">Comment</span>
