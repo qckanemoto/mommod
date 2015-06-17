@@ -35,16 +35,17 @@ angular
 
         markedProvider
             .setOptions({
+                // todo: I don't know why but this kills autoscroll of ngView...
+                //highlight: function (code) {
+                //    return hljs.highlightAuto(code).value;
+                //}
                 gfm: true,
                 tables: true,
                 breaks: true,
                 pedantic: false,
                 sanitize: true,
                 smartLists: true,
-                smartypants: false,
-                highlight: function (code) {
-                    return hljs.highlightAuto(code).value;
-                }
+                smartypants: false
             });
 
         hljsServiceProvider
