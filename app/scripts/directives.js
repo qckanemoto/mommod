@@ -19,6 +19,12 @@ angular.module('mommodApp')
                 scope.scrollTo = function (hash) {
                     $location.hash(hash);
                 }
+
+                scope.isEditing = false;
+                scope.editingContent = scope.comment.content;
+                scope.$watch('isEditing', function () {
+                    scope.slimmed = scope.isEditing;
+                });
             }
         };
     }])
