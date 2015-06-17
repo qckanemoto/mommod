@@ -31,4 +31,22 @@ angular.module('mommodApp')
             }
         };
     })
+    .directive('anyNgHref', ['$location', function ($location) {
+        return {
+            restrict: 'A',
+            scope: {
+                href: '@anyNgHref'
+            },
+            link: function (scope, elem, attr) {
+                elem.on('click', function () {
+                    var href = scope.href.replace(/^#/, '').split('#');
+                    var path = href[0];
+                    var hash = href[1];
+                    scope.$apply(function () {
+                        $location.url(path + '#' + hash);
+                    });
+                });
+            }
+        };
+    }])
 ;

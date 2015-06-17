@@ -5,5 +5,7 @@
         <li class="active">Thread of comment #{{ commentId }}</li>
     </ol>
 
-    <comment-view ng-repeat="comment in thread" comment="comment" slimmed="true"></comment-view>
+    <div ng-repeat="comment in thread" any-ng-href="#/topic/1#comment-{{ comment.id }}" class="clickable clickable-assertive">
+        <comment-view comment="comment" slimmed="true"></comment-view>
+    </div>
 </div>
