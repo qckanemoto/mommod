@@ -89,7 +89,6 @@ http://test.com\n',
             ],
             created_at: new Date(),
             updated_at: null,
-            active: false
         },
         {
             id: 4,
@@ -100,7 +99,6 @@ http://test.com\n',
             ],
             created_at: new Date(),
             updated_at: null,
-            active: false
         },
         {
             id: 5,
@@ -111,7 +109,6 @@ http://test.com\n',
             ],
             created_at: new Date(),
             updated_at: null,
-            active: true
         },
         {
             id: 6,
@@ -123,7 +120,6 @@ http://test.com\n',
             ],
             created_at: new Date(),
             updated_at: null,
-            active: false
         }
     ])
 ;

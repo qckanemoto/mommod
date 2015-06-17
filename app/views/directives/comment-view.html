@@ -1,12 +1,12 @@
 <div id="comment-{{ comment.id }}">
-    <div class="panel panel-default">
+    <div class="panel panel-{{ panelType }}">
         <div class="panel-heading clearfix">
             <div class="pull-right">
                 <span class="text-muted"><i class="fa fa-clock-o"></i> <a ng-click="scrollTo('comment-' + comment.id)" class="clickable">{{ comment.created_at | date: 'yyyy-MM-dd' }}</a></span>
                 <a ng-hide="slimmed" class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
             </div>
         </div>
-        <div class="panel-body" ng-class="{ 'bg-warning': comment.active }">
+        <div class="panel-body">
             <div marked="comment.content"></div>
         </div>
         <ul ng-hide="slimmed" class="list-group">

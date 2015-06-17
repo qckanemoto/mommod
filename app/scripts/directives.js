@@ -8,10 +8,14 @@ angular.module('mommodApp')
             scope: {
                 comment: '=',
                 replyTo: '=',
+                panelType: '@',
                 slimmed: '@'
             },
             templateUrl: 'views/directives/comment-view.html',
             link: function (scope, elem, attr) {
+                if (!scope.panelType) {
+                    scope.panelType = 'default';
+                }
                 scope.scrollTo = function (hash) {
                     $location.hash(hash);
                 }

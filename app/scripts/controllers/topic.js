@@ -5,7 +5,6 @@ angular.module('mommodApp')
         $scope.myUserName = 'user1';
 
         $scope.topicId = $routeParams.topicId;
-        $scope.commentId = $routeParams.commentId;
 
         $scope.topic = mockTopic;
         $scope.comments = mockComments;

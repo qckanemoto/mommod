@@ -25,7 +25,7 @@ angular
                 templateUrl: 'views/new.html',
                 controller: 'NewCtrl'
             })
-            .when('/thread/:id', {
+            .when('/thread/:commentId', {
                 templateUrl: 'views/thread.html',
                 controller: 'ThreadCtrl'
             })

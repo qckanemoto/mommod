@@ -6,6 +6,6 @@
     </ol>
 
     <div ng-repeat="comment in thread" any-ng-href="#/topic/1#comment-{{ comment.id }}" class="clickable clickable-assertive">
-        <comment-view comment="comment" slimmed="true"></comment-view>
+        <comment-view comment="comment" slimmed="true" panel-type="{{ commentId == comment.id ? 'info' : 'default' }}"></comment-view>
     </div>
 </div>
