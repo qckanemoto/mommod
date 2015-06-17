@@ -25,6 +25,10 @@ angular
                 templateUrl: 'views/new.html',
                 controller: 'NewCtrl'
             })
+            .when('/thread/:id', {
+                templateUrl: 'views/thread.html',
+                controller: 'ThreadCtrl'
+            })
             .otherwise({
                 redirectTo: '/'
             });

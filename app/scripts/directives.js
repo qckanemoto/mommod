@@ -7,7 +7,8 @@ angular.module('mommodApp')
             replace: true,
             scope: {
                 comment: '=',
-                replyTo: '='
+                replyTo: '=',
+                inThread: '@'
             },
             templateUrl: 'views/directives/comment-view.html',
             link: function (scope, elem, attr) {

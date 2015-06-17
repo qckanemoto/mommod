@@ -1,22 +1,24 @@
-<div class="panel panel-default" ng-show="!replyTo || comment.id <= replyTo.id" class="panel panel-default" ng-class="{ 'panel-info': replyTo == comment }">
-    <div class="panel-heading clearfix">
-        <div class="pull-right">
-            <span class="text-muted"><i class="fa fa-clock-o"></i> {{ comment.created_at | date: 'yyyy-MM-dd' }}</span>
-            <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
-        </div>
-    </div>
-    <div class="panel-body">
-        <div marked="comment.content"></div>
-    </div>
-    <ul class="list-group">
-        <li class="list-group-item clearfix">
-            <div class="pull-left">
-                <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
-            </div>
+<div id="comment-{{ comment.id }}" ng-class="{ clickable: inThread }" ng-show="!replyTo || comment.id <= replyTo.id">
+    <div class="panel panel-default" ng-class="{ 'panel-info': replyTo == comment }">
+        <div class="panel-heading clearfix">
             <div class="pull-right">
-                <span ng-click="replyTo = (replyTo == comment ? null : comment)" class="btn btn-default btn-sm" ng-class="{ active: replyTo == comment }"><i class="fa fa-reply"></i> Reply</span>
-                <span class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</span>
+                <span class="text-muted"><i class="fa fa-clock-o"></i> {{ comment.created_at | date: 'yyyy-MM-dd' }}</span>
+                <a ng-hide="inThread" class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
             </div>
-        </li>
-    </ul>
+        </div>
+        <div class="panel-body" ng-class="{ 'bg-warning': inThread && comment.active }">
+            <div marked="comment.content"></div>
+        </div>
+        <ul ng-hide="inThread" class="list-group">
+            <li class="list-group-item clearfix">
+                <div class="pull-left">
+                    <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
+                </div>
+                <div class="pull-right">
+                    <span ng-click="replyTo = (replyTo == comment ? null : comment)" class="btn btn-default btn-sm" ng-class="{ active: replyTo == comment }"><i class="fa fa-reply"></i> Reply</span>
+                    <span class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</span>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>
