@@ -21,7 +21,9 @@
     </div>
 
     <!-- comments -->
-    <comment-view ng-repeat="comment in comments" comment="comment" reply-to="$parent.replyTo"></comment-view>
+    <div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment.id">
+        <comment-view comment="comment" reply-to="$parent.replyTo"></comment-view>
+    </div>
 
     <!-- comment form -->
     <div class="panel panel-default">

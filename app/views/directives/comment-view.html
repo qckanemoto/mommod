@@ -1,5 +1,5 @@
-<div id="comment-{{ comment.id }}" ng-show="!replyTo || comment.id <= replyTo.id">
-    <div class="panel panel-default" ng-class="{ 'panel-info': replyTo == comment }">
+<div id="comment-{{ comment.id }}">
+    <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="pull-right">
                 <span class="text-muted"><i class="fa fa-clock-o"></i> <a ng-click="scrollTo('comment-' + comment.id)" class="clickable">{{ comment.created_at | date: 'yyyy-MM-dd' }}</a></span>
@@ -15,7 +15,7 @@
                     <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
                 </div>
                 <div class="pull-right">
-                    <span ng-click="replyTo = (replyTo == comment ? null : comment)" class="btn btn-default btn-sm" ng-class="{ active: replyTo == comment }"><i class="fa fa-reply"></i> Reply</span>
+                    <span ng-click="replyTo = (replyTo == comment.id ? null : comment.id)" class="btn btn-default btn-sm" ng-class="{ active: replyTo == comment.id }"><i class="fa fa-reply"></i> Reply</span>
                     <span class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</span>
                 </div>
             </li>
