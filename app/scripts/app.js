@@ -17,9 +17,9 @@ angular
                 templateUrl: 'views/main.html',
                 controller: 'MainCtrl'
             })
-            .when('/list', {
-                templateUrl: 'views/list.html',
-                controller: 'ListCtrl'
+            .when('/topic/:topicId', {
+                templateUrl: 'views/topic.html',
+                controller: 'TopicCtrl'
             })
             .when('/new', {
                 templateUrl: 'views/new.html',

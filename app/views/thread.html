@@ -1,9 +1,9 @@
 <div class="col-md-8 col-md-offset-2">
     <ol class="breadcrumb">
-        <li><a ng-href="#/list/">Topic list</a></li>
-        <li><a ng-href="#/">Topic #1</a></li>
-        <li class="active">Thread of comment #{{ threadId }}</li>
+        <li><a ng-href="#/">Topic list</a></li>
+        <li><a ng-href="#/topic/1#comment-{{ commentId }}">Topic #1</a></li>
+        <li class="active">Thread of comment #{{ commentId }}</li>
     </ol>
 
-    <comment-view ng-repeat="comment in thread" comment="comment" in-thread="true"></comment-view>
+    <comment-view ng-repeat="comment in thread" comment="comment" slimmed="true"></comment-view>
 </div>
