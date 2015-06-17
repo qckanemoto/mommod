@@ -1,12 +1,7 @@
 'use strict';
 
 angular.module('mommodApp')
-    .controller('TopicCtrl', ['$scope', '$routeParams', '$anchorScroll', '$timeout', 'mockTopic', 'mockComments', function ($scope, $routeParams, $anchorScroll, $timeout, mockTopic, mockComments) {
-
-        $timeout(function () {
-            $anchorScroll();
-        }, 1000);
-
+    .controller('TopicCtrl', ['$scope', '$routeParams', 'mockTopic', 'mockComments', function ($scope, $routeParams, mockTopic, mockComments) {
         $scope.myUserName = 'user1';
 
         $scope.topicId = $routeParams.topicId;

@@ -49,4 +49,15 @@ angular.module('mommodApp')
             }
         };
     }])
+    .directive('autofocus', function () {
+        return {
+            restrict: 'A',
+            scope: false,
+            link: function (scope, elem, attr) {
+                scope.$on('$viewContentLoaded', function () {
+                    elem.focus();
+                });
+            }
+        };
+    })
 ;
