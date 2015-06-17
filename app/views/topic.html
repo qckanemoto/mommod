@@ -1,43 +1,40 @@
-<div class="col-md-8 col-md-offset-2">
-    <ol class="breadcrumb">
-        <li><a ng-href="#/">Topic list</a></li>
-        <li class="active">Topic #{{ topic.id }}</li>
-    </ol>
+<ol class="breadcrumb">
+    <li><a ng-href="#/">Topic list</a></li>
+    <li class="active">Topic #{{ topic.id }}</li>
+</ol>
 
-    <h1>{{ topic.title }}</h1>
-    <hr/>
+<h1>{{ topic.title }}</h1>
+<hr/>
 
-    <!-- topic -->
-    <div class="panel panel-default">
-        <div class="panel-heading clearfix">
-            <div class="pull-right">
-                <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.created_at | date: 'yyyy-MM-dd' }}</span>
-                <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
-            </div>
-        </div>
-        <div class="panel-body">
-            <div marked="topic.content"></div>
+<!-- topic -->
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="pull-right">
+            <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.created_at | date: 'yyyy-MM-dd' }}</span>
+            <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
         </div>
     </div>
-
-    <!-- comments -->
-    <div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment.id">
-        <comment-view comment="comment" reply-to="$parent.replyTo"></comment-view>
+    <div class="panel-body">
+        <div marked="topic.content"></div>
     </div>
+</div>
 
-    <!-- comment form -->
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div ng-show="!replyTo"><b><i class="fa fa-comment-o"></i> Leave a comment</b></div>
-            <div ng-show="replyTo"><b><i class="fa fa-reply"></i> Reply to this comment</b></div>
-        </div>
-        <div class="panel-body">
-            <markdown-editor content="commentContent"></markdown-editor>
-            <div class="text-right">
-                <span ng-show="replyTo" ng-click="replyTo = null" class="btn btn-default btn-sm">Cancel</span>
-                <span class="btn btn-primary btn-sm">Comment</span>
-            </div>
+<!-- comments -->
+<div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment.id">
+    <comment-view comment="comment" reply-to="$parent.replyTo"></comment-view>
+</div>
+
+<!-- comment form -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div ng-show="!replyTo"><b><i class="fa fa-comment-o"></i> Leave a comment</b></div>
+        <div ng-show="replyTo"><b><i class="fa fa-reply"></i> Reply to this comment</b></div>
+    </div>
+    <div class="panel-body">
+        <markdown-editor content="commentContent"></markdown-editor>
+        <div class="text-right">
+            <span ng-show="replyTo" ng-click="replyTo = null" class="btn btn-default btn-sm">Cancel</span>
+            <span class="btn btn-primary btn-sm">Comment</span>
         </div>
     </div>
-
 </div>

@@ -1,11 +1,9 @@
-<div class="col-md-8 col-md-offset-2">
-    <ol class="breadcrumb">
-        <li><a ng-href="#/">Topic list</a></li>
-        <li><a ng-href="#/topic/1#comment-{{ commentId }}">Topic #1</a></li>
-        <li class="active">Thread of comment #{{ commentId }}</li>
-    </ol>
+<ol class="breadcrumb">
+    <li><a ng-href="#/">Topic list</a></li>
+    <li><a ng-href="#/topic/1#comment-{{ commentId }}">Topic #1</a></li>
+    <li class="active">Thread of comment #{{ commentId }}</li>
+</ol>
 
-    <div ng-repeat="comment in thread" any-ng-href="#/topic/1#comment-{{ comment.id }}" class="clickable clickable-assertive">
-        <comment-view comment="comment" slimmed="true" panel-type="{{ commentId == comment.id ? 'info' : 'default' }}"></comment-view>
-    </div>
+<div ng-repeat="comment in thread" any-ng-href="#/topic/1#comment-{{ comment.id }}" class="clickable clickable-assertive">
+    <comment-view comment="comment" slimmed="true" panel-type="{{ commentId == comment.id ? 'info' : 'default' }}"></comment-view>
 </div>

@@ -1,16 +1,14 @@
-<div class="col-md-8 col-md-offset-2">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h4>Create new Topic</h4>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>Create new Topic</h4>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <input ng-model="title" class="form-control" type="text" placeholder="Title" autofocus />
         </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <input ng-model="title" class="form-control" type="text" placeholder="Title" autofocus />
-            </div>
-            <markdown-editor content="content"></markdown-editor>
-            <div class="text-right">
-                <button class="btn btn-primary">Submit new topic</button>
-            </div>
+        <markdown-editor content="content"></markdown-editor>
+        <div class="text-right">
+            <button class="btn btn-primary">Submit new topic</button>
         </div>
     </div>
 </div>
