@@ -20,6 +20,7 @@ angular.module('mommodApp')
                     submit: scope.labelSubmit || 'Submit',
                     'delete': scope.labelDelete || 'Delete'
                 };
+                scope.editingContent = scope.content;
             }
         };
     })
