@@ -393,6 +393,11 @@ module.exports = function (grunt) {
           cwd: 'bower_components/fontawesome/',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          cwd: 'bower_components/angular-emoji-filter/dist',
+          src: 'emoji.png',
+          dest: '<%= yeoman.dist %>/styles'
         }]
       },
       styles: {

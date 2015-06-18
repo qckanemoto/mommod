@@ -25,7 +25,9 @@ test test test test test test test test test test test.\n\
 echo \'test\';\n\
 ```\n\
 \n\
-http://test.com\n',
+http://test.com\n\
+\n\
+emoji :+1: emoji',
         created_at: new Date(),
         updated_at: null
     })

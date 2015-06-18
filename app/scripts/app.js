@@ -9,7 +9,8 @@ angular
         'ngSanitize',
         'ngTouch',
         'hc.marked',
-        'hljs'
+        'hljs',
+        'emoji'
     ])
     .config(['$routeProvider', 'markedProvider', 'hljsServiceProvider', function ($routeProvider, markedProvider, hljsServiceProvider) {
         $routeProvider
@@ -43,7 +44,7 @@ angular
                 tables: true,
                 breaks: true,
                 pedantic: false,
-                sanitize: true,
+                sanitize: false,
                 smartLists: true,
                 smartypants: false
             });
