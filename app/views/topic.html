@@ -38,7 +38,7 @@
                 </div>
                 <div class="pull-right">
                     <span ng-click="$parent.replyTo = ($parent.replyTo == comment.id ? null : comment.id)" class="btn btn-default btn-sm" ng-class="{ active: $parent.replyTo == comment.id }"><i class="fa fa-reply"></i> Reply</span>
-                    <span class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</span>
+                    <span ng-click="toggleStar(comment)" class="btn btn-default btn-sm"><i class="fa" ng-class="isStarred(comment) ? 'fa-star' : 'fa-star-o'"></i> {{ comment.stargazers.length }}</span>
                 </div>
             </li>
         </ul>

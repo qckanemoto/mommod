@@ -18,8 +18,17 @@ angular.module('mommodApp')
             }
         });
 
-        $scope.isStarred = function (stargazers) {
-            return stargazers.indexOf($scope.myUserName) > -1;
+        $scope.isStarred = function (comment) {
+            return comment.stargazers.indexOf($scope.myUserName) > -1;
+        };
+        $scope.toggleStar = function (comment) {
+            var idx = comment.stargazers.indexOf($scope.myUserName);
+            if (idx == -1) {
+                comment.stargazers.push($scope.myUserName);
+            } else {
+                delete comment.stargazers[idx];
+                comment.stargazers = _.compact(comment.stargazers);
+            }
         };
     }])
 ;
