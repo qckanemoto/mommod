@@ -1,6 +1,13 @@
 'use strict';
 
 angular.module('mommodApp')
+    .factory('assertSignedIn', ['$rootScope', '$location', function ($rootScope, $location) {
+        return function () {
+            if (!$rootScope.currentUser) {
+                $location.path('/');
+            }
+        };
+    }])
     .constant('mockTopic', {
         id: 1,
         title: 'test topic test topic',

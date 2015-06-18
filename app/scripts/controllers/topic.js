@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('mommodApp')
-    .controller('TopicCtrl', ['$scope', '$routeParams', 'mockTopic', 'mockComments', function ($scope, $routeParams, mockTopic, mockComments) {
+    .controller('TopicCtrl', ['$scope', '$routeParams', 'mockTopic', 'mockComments', 'assertSignedIn', function ($scope, $routeParams, mockTopic, mockComments, assertSignedIn) {
+        assertSignedIn();
+
         $scope.myUserName = 'user1';
 
         $scope.topicId = $routeParams.topicId;

@@ -18,6 +18,10 @@ angular
                 templateUrl: 'views/main.html',
                 controller: 'MainCtrl'
             })
+            .when('/list', {
+                templateUrl: 'views/list.html',
+                controller: 'ListCtrl'
+            })
             .when('/topic/:topicId', {
                 templateUrl: 'views/topic.html',
                 controller: 'TopicCtrl'
@@ -53,5 +57,26 @@ angular
             .setOptions({
                 tabReplace: '    '
             });
+    }])
+    .controller('SignOutCtrl', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) {
+        $scope.signOut = function () {
+            if (confirm('Sign out?')) {
+                Parse.User.logOut();
+                $rootScope.currentUser = null;
+                $location.path('/');
+            }
+        }
+    }])
+    .run(['$rootScope', '$location', function ($rootScope, $location) {
+
+        // restore currentUser from session.
+        $rootScope.currentUser = Parse.User.current();
+
+        // remove alert after move page.
+        $rootScope.$on('$locationChangeSuccess', function () {
+            if ($rootScope.alert && $rootScope.alert.path != $location.path()) {
+                delete $rootScope.alert;
+            }
+        });
     }])
 ;
