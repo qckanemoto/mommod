@@ -12,6 +12,12 @@ angular.module('mommodApp')
         $scope.replyTo = null;
         $scope.commentContent = '';
 
+        $scope.submission = {};
+        $scope.$watch('submission', function () {
+            if ($scope.submission.submit) {
+            }
+        });
+
         $scope.isStarred = function (stargazers) {
             return stargazers.indexOf($scope.myUserName) > -1;
         };

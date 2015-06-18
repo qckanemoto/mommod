@@ -4,6 +4,15 @@
     <li class="active">Thread of comment #{{ commentId }}</li>
 </ol>
 
-<div ng-repeat="comment in thread" any-ng-href="#/topic/1#comment-{{ comment.id }}" class="clickable clickable-assertive">
-    <comment-view comment="comment" slimmed="true" panel-type="{{ commentId == comment.id ? 'info' : 'default' }}"></comment-view>
+<div ng-repeat="comment in thread" any-href="#/topic/1#comment-{{ comment.id }}" class="clickable clickable-assertive">
+    <div class="panel panel-{{ commentId == comment.id ? 'info' : 'default' }}">
+        <div class="panel-heading">
+            <div class="text-right">
+                <date-anchor-link date="{{ comment.created_at | date: 'yyyy-MM-dd' }}" base-url="#/thread/{{ commentId }}" hash="comment-{{ comment.id }}"></date-anchor-link>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div marked="comment.content"></div>
+        </div>
+    </div>
 </div>

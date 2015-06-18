@@ -88,7 +88,7 @@ http://test.com\n',
                 'user1'
             ],
             created_at: new Date(),
-            updated_at: null,
+            updated_at: null
         },
         {
             id: 4,
@@ -98,7 +98,7 @@ http://test.com\n',
                 'user3'
             ],
             created_at: new Date(),
-            updated_at: null,
+            updated_at: null
         },
         {
             id: 5,
@@ -108,7 +108,7 @@ http://test.com\n',
                 'user2'
             ],
             created_at: new Date(),
-            updated_at: null,
+            updated_at: null
         },
         {
             id: 6,
@@ -119,7 +119,7 @@ http://test.com\n',
                 'user3'
             ],
             created_at: new Date(),
-            updated_at: null,
+            updated_at: null
         }
     ])
 ;

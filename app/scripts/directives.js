@@ -1,33 +1,28 @@
 'use strict';
 
 angular.module('mommodApp')
-    .directive('commentView', ['$location', function ($location) {
+    .directive('editableMarkdownView', function () {
         return {
             restrict: 'E',
             replace: true,
             scope: {
-                comment: '=',
-                replyTo: '=',
-                panelType: '@',
-                slimmed: '@'
+                content: '=',
+                submission: '=',
+                labelCancel: '@',
+                labelSubmit: '@',
+                labelDelete: '@'
             },
-            templateUrl: 'views/directives/comment-view.html',
+            templateUrl: 'views/directives/editable-markdown-view.html',
             link: function (scope, elem, attr) {
-                if (!scope.panelType) {
-                    scope.panelType = 'default';
-                }
-                scope.scrollTo = function (hash) {
-                    $location.hash(hash);
-                }
-
-                scope.isEditing = false;
-                scope.editingContent = scope.comment.content;
-                scope.$watch('isEditing', function () {
-                    scope.slimmed = scope.isEditing;
-                });
+                scope.deletable = 'deletable' in attr;
+                scope.label = {
+                    cancel: scope.labelCancel || 'Cancel',
+                    submit: scope.labelSubmit || 'Submit',
+                    'delete': scope.labelDelete || 'Delete'
+                };
             }
         };
-    }])
+    })
     .directive('markdownEditor', function () {
         return {
             restrict: 'E',
@@ -41,11 +36,11 @@ angular.module('mommodApp')
             }
         };
     })
-    .directive('anyNgHref', ['$location', function ($location) {
+    .directive('anyHref', ['$location', function ($location) {
         return {
             restrict: 'A',
             scope: {
-                href: '@anyNgHref'
+                href: '@anyHref'
             },
             link: function (scope, elem, attr) {
                 elem.on('click', function () {
@@ -67,6 +62,18 @@ angular.module('mommodApp')
                 scope.$on('$viewContentLoaded', function () {
                     elem.focus();
                 });
+            }
+        };
+    })
+    .directive('dateAnchorLink', function () {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: 'views/directives/date-anchor-link.html',
+            scope: {
+                date: '@',
+                baseUrl: '@',
+                hash: '@'
             }
         };
     })

@@ -11,17 +11,38 @@
     <div class="panel-heading clearfix">
         <div class="pull-right">
             <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.created_at | date: 'yyyy-MM-dd' }}</span>
-            <a class="btn btn-link btn-xs" ng-href="#/"><i class="fa fa-pencil"></i></a>
         </div>
     </div>
     <div class="panel-body">
-        <div marked="topic.content"></div>
+        <editable-markdown-view content="topic.content" label-submit="Update description" submission="submission"></editable-markdown-view>
     </div>
 </div>
 
 <!-- comments -->
-<div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment.id">
-    <comment-view comment="comment" reply-to="$parent.replyTo"></comment-view>
+<div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment.id" id="comment-{{ comment.id }}">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="pull-right">
+                <date-anchor-link date="{{ comment.created_at | date: 'yyyy-MM-dd' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <editable-markdown-view content="comment.content" label-submit="Update comment" submission="submission" deletable></editable-markdown-view>
+        </div>
+
+        <ul class="list-group">
+            <li class="list-group-item clearfix">
+                <div class="pull-left">
+                    <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
+                </div>
+                <div class="pull-right">
+                    <span ng-click="$parent.replyTo = ($parent.replyTo == comment.id ? null : comment.id)" class="btn btn-default btn-sm" ng-class="{ active: $parent.replyTo == comment.id }"><i class="fa fa-reply"></i> Reply</span>
+                    <span class="btn btn-default btn-sm"><i class="fa" ng-class="{ 'fa-star': isStarred(comment.stargazers), 'fa-star-o': !isStarred(comment.stargazers) }"></i> {{ comment.stargazers.length }}</span>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>
 
 <!-- comment form -->
