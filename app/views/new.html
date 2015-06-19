@@ -3,12 +3,15 @@
         <b>Create new Topic</b>
     </div>
     <div class="panel-body">
-        <div class="form-group">
-            <input ng-model="title" class="form-control" type="text" placeholder="Title" autofocus />
-        </div>
-        <markdown-editor content="content"></markdown-editor>
-        <div class="text-right">
-            <button class="btn btn-primary">Submit</button>
-        </div>
+        <form ng-submit="createTopic()">
+            <div class="form-group">
+                <input ng-model="title" class="form-control" type="text" placeholder="Title" required autofocus />
+            </div>
+            <markdown-editor content="content" required></markdown-editor>
+            <input type="hidden" value="{{ content }}" />
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
     </div>
 </div>

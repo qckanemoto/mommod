@@ -33,6 +33,7 @@ angular.module('mommodApp')
                 content: '='
             },
             link: function (scope, elem, attr) {
+                scope.required = 'required' in attr;
                 scope.isEditing = true;
             }
         };
