@@ -46,11 +46,10 @@ angular.module('mommodApp')
             },
             link: function (scope, elem, attr) {
                 elem.on('click', function () {
-                    var href = scope.href.replace(/^#/, '').split('#');
-                    var path = href[0];
-                    var hash = href[1];
+                    var buf = scope.href.replace(/^#/, '').split('#');
+                    var url = buf[0] + (buf[1] ? '#' + buf[1] : '');
                     scope.$apply(function () {
-                        $location.url(path + '#' + hash);
+                        $location.url(url);
                     });
                 });
             }

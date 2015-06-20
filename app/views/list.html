@@ -2,18 +2,34 @@
     <li class="active">Topic list</li>
 </ol>
 
-<div class="list-group">
-    <a ng-repeat="i in [1,2,3,4,5]" ng-href="#/topic/1" class="list-group-item">
-        <h4 class="list-group-item-heading" style="margin-top: .5em; margin-bottom: .8em">Topic title</h4>
-        <div class="list-group-item-text clearfix">
-            <ul class="list-inline pull-left">
-                <li><i class="fa fa-users"></i> 4</li>
-                <li><i class="fa fa-comment-o"></i> 23</li>
-            </ul>
-            <ul class="list-inline pull-right">
-                <li><i class="fa fa-clock-o"></i> 2015-06-01</li>
-                <li><i class="fa fa-history"></i> 2015-06-12</li>
-            </ul>
-        </div>
-    </a>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created at</th>
+            <th>Updated at</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="topic in topics" any-href="#/topic/{{ topic.id }}" class="clickable">
+            <td>{{ topic.get('title') }}</td>
+            <td class="fixed">
+                <ul class="list-inline">
+                    <li><i class="fa fa-users"></i> 3</li>
+                    <li><i class="fa fa-comment-o"></i> 12</li>
+                </ul>
+            </td>
+            <td class="fixed">{{ topic.createdAt | date: 'yyyy-MM-dd' }}</td>
+            <td class="fixed">{{ topic.updatedAt | date: 'yyyy-MM-dd' }}</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
+
+<style>
+    .fixed {
+        min-width: 100px;
+    }
+</style>
