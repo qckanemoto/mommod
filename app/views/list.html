@@ -6,6 +6,7 @@
     <table class="table table-hover">
         <thead>
         <tr>
+            <th>Owner</th>
             <th>Title</th>
             <th>Status</th>
             <th>Created at</th>
@@ -14,11 +15,12 @@
         </thead>
         <tbody>
         <tr ng-repeat="topic in topics" any-href="#/topic/{{ topic.id }}" class="clickable">
+            <td>{{ topic.get('user').get('username') }}</td>
             <td>{{ topic.get('title') }}</td>
             <td class="fixed">
                 <ul class="list-inline">
-                    <li><i class="fa fa-users"></i> 3</li>
-                    <li><i class="fa fa-comment-o"></i> 12</li>
+                    <li><i class="fa fa-users"></i> {{ counts.joiners[$index] }}</li>
+                    <li><i class="fa fa-comment-o"></i> {{ counts.comments[$index] }}</li>
                 </ul>
             </td>
             <td class="fixed">{{ topic.createdAt | date: 'yyyy-MM-dd' }}</td>
