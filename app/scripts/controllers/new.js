@@ -11,11 +11,18 @@ angular.module('mommodApp')
             $scope.content = '';
 
             $scope.createTopic = function () {
+                var acl = new Parse.ACL();
+                acl.setPublicReadAccess(false);
+                acl.setPublicWriteAccess(false);
+                acl.setReadAccess($rootScope.currentUser.id, true);
+                acl.setWriteAccess($rootScope.currentUser.id, true);
+
                 var topic = new Parse.Object('Topic');
                 topic
                     .set('title', $scope.title)
                     .set('content', $scope.content)
                     .set('user', $rootScope.currentUser)
+                    .setACL(acl)
                     .save()
                     .done(function (topic) {
                         $scope.$apply(function () {

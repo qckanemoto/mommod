@@ -27,18 +27,10 @@ angular.module('mommodApp')
                 })
                 .then(function (topics) {
                     // count joiners.
-                    var promise = new Parse.Promise.as();
                     topics.forEach(function (topic) {
-                        promise = promise
-                            .then(function () {
-                                return topic.relation('joiners').query().count();
-                            })
-                            .then(function (count) {
-                                $scope.$apply(function () {
-                                    $scope.counts.joiners.push(count);
-                                });
-                            })
-                        ;
+                        $scope.$apply(function () {
+                            $scope.counts.joiners.push(_.keys(topic.getACL().toJSON()).length);
+                        });
                     });
                     return new Parse.Promise.as(topics);
                 })
