@@ -3,32 +3,32 @@
     <li class="active">Topic #{{ topic.id }}</li>
 </ol>
 
-<h1>{{ topic.title }}</h1>
+<h1>{{ topic.get('title') }}</h1>
 <hr/>
 
 <!-- topic -->
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
         <div class="pull-right">
-            <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.created_at | date: 'yyyy-MM-dd' }}</span>
+            <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.createdAt | date: 'yyyy-MM-dd' }}</span>
         </div>
     </div>
     <div class="panel-body">
-        <editable-markdown-view content="topic.content" label-submit="Update description" submission="submission"></editable-markdown-view>
+        <editable-markdown-view content="topic.get('content')" label-submit="Update description" submission="submission"></editable-markdown-view>
     </div>
 </div>
 
 <!-- comments -->
-<div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment.id" id="comment-{{ comment.id }}">
+<div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment" id="comment-{{ comment.id }}">
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <div class="pull-right">
-                <date-anchor-link date="{{ comment.created_at | date: 'yyyy-MM-dd' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link>
+                <date-anchor-link date="{{ comment.createdAt | date: 'yyyy-MM-dd' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link>
             </div>
         </div>
 
         <div class="panel-body">
-            <editable-markdown-view content="comment.content" label-submit="Update comment" submission="submission" deletable></editable-markdown-view>
+            <editable-markdown-view content="comment.get('content')" label-submit="Update comment" submission="submission" deletable></editable-markdown-view>
         </div>
 
         <ul class="list-group">
@@ -37,8 +37,8 @@
                     <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
                 </div>
                 <div class="pull-right">
-                    <span ng-click="$parent.replyTo = ($parent.replyTo == comment.id ? null : comment.id)" class="btn btn-default btn-sm" ng-class="{ active: $parent.replyTo == comment.id }"><i class="fa fa-reply"></i> Reply</span>
-                    <span ng-click="toggleStar(comment)" class="btn btn-default btn-sm"><i class="fa" ng-class="isStarred(comment) ? 'fa-star' : 'fa-star-o'"></i> {{ comment.stargazers.length }}</span>
+                    <span ng-click="$parent.replyTo = ($parent.replyTo == comment ? null : comment)" class="btn btn-default btn-sm" ng-class="{ active: $parent.replyTo == comment }"><i class="fa fa-reply"></i> Reply</span>
+                    <!--span ng-click="toggleStar(comment)" class="btn btn-default btn-sm"><i class="fa" ng-class="isStarred(comment) ? 'fa-star' : 'fa-star-o'"></i> {{ comment.stargazers.length }}</span-->
                 </div>
             </li>
         </ul>
@@ -46,16 +46,19 @@
 </div>
 
 <!-- comment form -->
-<div class="panel panel-default">
+<div ng-show="topic" class="panel panel-default">
     <div class="panel-heading">
         <div ng-show="!replyTo"><b><i class="fa fa-comment-o"></i> Leave a comment</b></div>
         <div ng-show="replyTo"><b><i class="fa fa-reply"></i> Reply to this comment</b></div>
     </div>
     <div class="panel-body">
-        <markdown-editor content="commentContent"></markdown-editor>
-        <div class="text-right">
-            <span ng-show="replyTo" ng-click="replyTo = null" class="btn btn-default btn-sm">Cancel</span>
-            <span class="btn btn-primary btn-sm">Comment</span>
-        </div>
+        <form ng-submit="createComment()">
+            <markdown-editor content="commentContent"></markdown-editor>
+            <input type="hidden" value="{{ commentContent }}" />
+            <div class="text-right">
+                <span ng-show="replyTo" ng-click="replyTo = null" class="btn btn-default btn-sm">Cancel</span>
+                <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+            </div>
+        </form>
     </div>
 </div>
