@@ -8,10 +8,6 @@ angular.module('mommodApp')
             assertSignedIn();
 
             $scope.topics = [];
-            $scope.counts = {
-                joiners: [],
-                comments: []
-            };
 
             var query = {
                 topic: new Parse.Query('Topic'),
@@ -26,7 +22,10 @@ angular.module('mommodApp')
                 .then(function (topics) {
                     // count joiners.
                     topics.forEach(function (topic) {
-                        $scope.counts.joiners.push(_.keys(topic.getACL().toJSON()).length);
+                        var count = _.keys(topic.getACL().toJSON()).length;
+                        var target = _.findWhere($scope.topics, { id: topic.id });
+                        var index = _.indexOf($scope.topics, target);
+                        $scope.topics[index].count = { joiners: count };
                     });
                     return Parse.Promise.as(topics);
                 })
@@ -39,7 +38,9 @@ angular.module('mommodApp')
                                 return cachedParseQuery(query.comment.equalTo('topic', topic), 'count');
                             })
                             .done(function (count) {
-                                $scope.counts.comments.push(count);
+                                var target = _.findWhere($scope.topics, { id: topic.id });
+                                var index = _.indexOf($scope.topics, target);
+                                $scope.topics[index].count.comments = count;
                             })
                             .fail(function (error) {
                                 $scope.counts.comments.push('-');

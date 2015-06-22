@@ -20,8 +20,8 @@
             <td class="fixed">
                 <ul class="list-inline">
                     <li><span class="label label-xs label-{{ topic.get('closed') ? 'default' : 'primary' }}">{{ topic.get('closed') ? 'Closed' : 'Open' }}</span></li>
-                    <li><i class="fa fa-users"></i> {{ counts.joiners[$index] }}</li>
-                    <li><i class="fa fa-comment-o"></i> {{ counts.comments[$index] }}</li>
+                    <li><i class="fa fa-users"></i> {{ topic.count.joiners }}</li>
+                    <li><i class="fa fa-comment-o"></i> {{ topic.count.comments }}</li>
                 </ul>
             </td>
             <td class="fixed">{{ topic.createdAt | date: 'yyyy-MM-dd' }}</td>
