@@ -74,7 +74,10 @@
             <li class="list-group-item clearfix">
                 <div class="pull-right">
                     <span ng-click="$parent.replyTo = ($parent.replyTo == comment ? null : comment)" class="btn btn-default btn-sm" ng-class="{ active: $parent.replyTo == comment }"><i class="fa fa-reply"></i> Reply</span>
-                    <!--span ng-click="toggleStar(comment)" class="btn btn-default btn-sm"><i class="fa" ng-class="isStarred(comment) ? 'fa-star' : 'fa-star-o'"></i> {{ comment.stargazers.length }}</span-->
+
+                    <span ng-click="toggleStar(comment)" class="btn btn-default btn-sm">
+                        <i class="fa" ng-class="isStarred(comment) ? 'fa-star' : 'fa-star-o'"></i> {{ stargazers[comment.id].length }}
+                    </span>
                 </div>
             </li>
         </ul>

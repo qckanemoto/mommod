@@ -9,6 +9,7 @@ angular.module('mommodApp')
 
             $scope.topic = null;
             $scope.comments = [];
+            $scope.stargazers = [];
 
             // to separate original content and editing content of topic or comment.
             var makeEditable = function (obj) {
@@ -28,7 +29,7 @@ angular.module('mommodApp')
                 comment: new Parse.Query('Comment')
             };
 
-            // get topic and comments.
+            // get topic and comments and stargazers.
             cachedParseQuery(query.topic.equalTo('objectId', $routeParams.topicId).include('user'), 'first')
                 .then(function (topic) {
                     $scope.topic = makeEditable(topic);
@@ -42,7 +43,21 @@ angular.module('mommodApp')
                         return makeEditable(comment);
                     });
                     $scope.comments = comments;
-                    return Parse.Promise.as();
+                    return Parse.Promise.as(comments);
+                })
+                .then(function (comments) {
+                    var promise = Parse.Promise.as();
+                    comments.forEach(function (comment) {
+                        promise = promise
+                            .then(function () {
+                                return cachedParseQuery(comment.relation('stargazers').query(), 'find');
+                            })
+                            .done(function (stargazers) {
+                                $scope.stargazers[comment.id] = stargazers;
+                            })
+                        ;
+                    });
+                    return promise;
                 })
                 .done(function () {
                     $timeout();
@@ -146,16 +161,39 @@ angular.module('mommodApp')
                 }
             };
 
+            // star related functions.
             $scope.isStarred = function (comment) {
-                return comment.stargazers.indexOf($scope.myUserName) > -1;
+                return _.findWhere($scope.stargazers[comment.id], { id: $rootScope.currentUser.id });
             };
             $scope.toggleStar = function (comment) {
-                var idx = comment.stargazers.indexOf($scope.myUserName);
-                if (idx == -1) {
-                    comment.stargazers.push($scope.myUserName);
+                var me = $rootScope.currentUser;
+                var stargazers = comment.relation('stargazers');
+
+                if (!$scope.isStarred(comment)) {
+                    stargazers.add(me);
+                    comment.save()
+                        .then(function (comment) {
+                            $scope.stargazers[comment.id].push($rootScope.currentUser);
+                            return Parse.Promise.as();
+                        })
+                        .done(function () {
+                            $timeout();
+                        })
+                    ;
                 } else {
-                    delete comment.stargazers[idx];
-                    comment.stargazers = _.compact(comment.stargazers);
+                    stargazers.remove(me);
+                    comment.save()
+                        .then(function (comment) {
+                            var target = _.findWhere($scope.stargazers[comment.id], { id: me.id });
+                            var index = _.indexOf($scope.stargazers[comment.id], target);
+                            delete $scope.stargazers[comment.id][index];
+                            $scope.stargazers[comment.id] = _.compact($scope.stargazers[comment.id]);
+                            return Parse.Promise.as();
+                        })
+                        .done(function () {
+                            $timeout();
+                        })
+                    ;
                 }
             };
         }
