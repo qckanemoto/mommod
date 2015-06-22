@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('NewCtrl', [
-        '$scope', '$rootScope', '$location', 'assertSignedIn',
-        function ($scope, $rootScope, $location, assertSignedIn) {
+        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn',
+        function ($scope, $rootScope, $location, $timeout, assertSignedIn) {
 
             assertSignedIn();
 
@@ -25,23 +25,21 @@ angular.module('mommodApp')
                     .setACL(acl)
                     .save()
                     .done(function (topic) {
-                        $scope.$apply(function () {
-                            $location.path('topic/' + topic.id);
-                            $rootScope.alert = {
-                                type: 'success',
-                                message: 'Topic is successfully created.',
-                                path: $location.path()
-                            };
-                        });
+                        $location.path('topic/' + topic.id);
+                        $rootScope.alert = {
+                            type: 'success',
+                            message: 'Topic is successfully created.',
+                            path: $location.path()
+                        };
+                        $timeout();
                     })
                     .fail(function (error) {
-                        $scope.$apply(function () {
-                            $rootScope.alert = {
-                                type: 'danger',
-                                message: '[' + error.code + '] ' + error.message,
-                                path: $location.path()
-                            };
-                        });
+                        $rootScope.alert = {
+                            type: 'danger',
+                            message: '[' + error.code + '] ' + error.message,
+                            path: $location.path()
+                        };
+                        $timeout();
                     })
                 ;
             };

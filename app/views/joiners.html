@@ -1,0 +1,41 @@
+<ol class="breadcrumb">
+    <li><a ng-href="#/list">Topic list</a></li>
+    <li><a ng-href="#/topic/{{ topic.id }}">Topic #{{ topic.id }}</a></li>
+    <li class="active">Manage joiners</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-6">
+        <form ng-submit="addJoiner()">
+            <div class="form-group">
+                <div class="input-group">
+                    <input ng-model="usernameToAdd" class="form-control" type="text" placeholder="Enter username to add" autofocus />
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-default"><i class="fa fa-plus"></i> Add</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="joiner in joiners">
+            <td>{{ joiner.get('username') }}</td>
+            <td>
+                <ul class="list-inline" style="margin-bottom: 0;">
+                    <li ng-if="joiner.id != $parent.currentUser.id"><span ng-click="removeJoiner(joiner)" class="btn btn-danger btn-xs">Remove</span></li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

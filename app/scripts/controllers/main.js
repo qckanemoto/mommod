@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('MainCtrl', [
-        '$scope', '$rootScope', '$location',
-        function ($scope, $rootScope, $location) {
+        '$scope', '$rootScope', '$location', '$timeout',
+        function ($scope, $rootScope, $location, $timeout) {
             if ($rootScope.currentUser) {
                 $location.path('list');
             }
@@ -20,25 +20,21 @@ angular.module('mommodApp')
             $scope.signIn = function () {
                 Parse.User.logIn($scope.user.username, $scope.user.password)
                     .done(function (user) {
-                        $scope.$apply(function () {
-                            $rootScope.currentUser = user;
-                            $location.path('list');
-                            $rootScope.alert = {
-                                type: 'success',
-                                message: 'Successfully signed in.',
-                                path: $location.path()
-                            };
-                        });
+                        $rootScope.currentUser = user;
+                        $location.path('list');
+                        $rootScope.alert = {
+                            type: 'success',
+                            message: 'Successfully signed in.',
+                            path: $location.path()
+                        };
                     })
                     .fail(function (error) {
-                        console.log(error);
-                        $scope.$apply(function () {
-                            $rootScope.alert = {
-                                type: 'danger',
-                                message: '[' + error.code + '] ' + error.message,
-                                path: $location.path()
-                            };
-                        });
+                        $rootScope.alert = {
+                            type: 'danger',
+                            message: '[' + error.code + '] ' + error.message,
+                            path: $location.path()
+                        };
+                        $timeout();
                     })
                 ;
             };
@@ -50,25 +46,23 @@ angular.module('mommodApp')
                     .set('email', $scope.user.email)
                     .set('password', $scope.user.password)
                     .signUp()
-                    .then(function (user) {
-                        $scope.$apply(function () {
-                            $rootScope.currentUser = user;
-                            $location.path('list');
-                            $rootScope.alert = {
-                                type: 'success',
-                                message: 'Successfully signed up.',
-                                path: $location.path()
-                            };
-                        });
+                    .done(function (user) {
+                        $rootScope.currentUser = user;
+                        $location.path('list');
+                        $rootScope.alert = {
+                            type: 'success',
+                            message: 'Successfully signed up.',
+                            path: $location.path()
+                        };
+                        $timeout();
                     })
                     .fail(function (error) {
-                        $scope.$apply(function () {
-                            $rootScope.alert = {
-                                type: 'danger',
-                                message: '[' + error.code + '] ' + error.message,
-                                path: $location.path()
-                            };
-                        });
+                        $rootScope.alert = {
+                            type: 'danger',
+                            message: '[' + error.code + '] ' + error.message,
+                            path: $location.path()
+                        };
+                        $timeout();
                     })
                 ;
             };

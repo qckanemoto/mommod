@@ -9,17 +9,14 @@ angular.module('mommodApp')
 
             $scope.topics = [];
 
-            var query = {
-                topic: new Parse.Query('Topic'),
-                comment: new Parse.Query('Comment')
-            };
+            var query = null;
 
-            cachedParseQuery(query.topic.include('user').descending('updatedAt'), 'find')
+            // get topics.
+            query = new Parse.Query('Topic');
+            cachedParseQuery(query.include('user').descending('updatedAt'), 'find')
                 .then(function (topics) {
                     $scope.topics = topics;
-                    return Parse.Promise.as(topics);
-                })
-                .then(function (topics) {
+
                     // count joiners.
                     topics.forEach(function (topic) {
                         var count = _.keys(topic.getACL().toJSON()).length;
@@ -27,15 +24,14 @@ angular.module('mommodApp')
                         var index = _.indexOf($scope.topics, target);
                         $scope.topics[index].count = { joiners: count };
                     });
-                    return Parse.Promise.as(topics);
-                })
-                .then(function (topics) {
+
                     // count comments.
                     var promise = Parse.Promise.as();
                     topics.forEach(function (topic) {
                         promise = promise
                             .then(function () {
-                                return cachedParseQuery(query.comment.equalTo('topic', topic), 'count');
+                                query = new Parse.Query('Comment');
+                                return cachedParseQuery(query.equalTo('topic', topic), 'count');
                             })
                             .done(function (count) {
                                 var target = _.findWhere($scope.topics, { id: topic.id });
@@ -50,17 +46,15 @@ angular.module('mommodApp')
                     return promise;
                 })
                 .done(function () {
-                    // start $digest() loop if needed.
                     $timeout();
                 })
                 .fail(function (error) {
-                    $scope.$apply(function () {
-                        $rootScope.alert = {
-                            type: 'danger',
-                            message: '[' + error.code + '] ' + error.message,
-                            path: $location.path()
-                        };
-                    });
+                    $rootScope.alert = {
+                        type: 'danger',
+                        message: '[' + error.code + '] ' + error.message,
+                        path: $location.path()
+                    };
+                    $timeout();
                 })
             ;
         }

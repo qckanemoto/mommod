@@ -31,6 +31,10 @@ angular
                 templateUrl: 'views/topic.html',
                 controller: 'TopicCtrl'
             })
+            .when('/topic/:topicId/joiners', {
+                templateUrl: 'views/joiners.html',
+                controller: 'JoinersCtrl'
+            })
             .otherwise({
                 redirectTo: '/'
             });
