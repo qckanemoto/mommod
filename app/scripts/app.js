@@ -19,6 +19,10 @@ angular
                 templateUrl: 'views/main.html',
                 controller: 'MainCtrl'
             })
+            .when('/new', {
+                templateUrl: 'views/new.html',
+                controller: 'NewCtrl'
+            })
             .when('/list', {
                 templateUrl: 'views/list.html',
                 controller: 'ListCtrl'
@@ -26,14 +30,6 @@ angular
             .when('/topic/:topicId', {
                 templateUrl: 'views/topic.html',
                 controller: 'TopicCtrl'
-            })
-            .when('/new', {
-                templateUrl: 'views/new.html',
-                controller: 'NewCtrl'
-            })
-            .when('/thread/:commentId', {
-                templateUrl: 'views/thread.html',
-                controller: 'ThreadCtrl'
             })
             .otherwise({
                 redirectTo: '/'

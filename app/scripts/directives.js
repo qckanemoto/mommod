@@ -32,6 +32,20 @@ angular.module('mommodApp')
             }
         };
     }])
+    .directive('hashFocusedClass', ['$location', function ($location) {
+        return {
+            restrict: 'A',
+            scope: {
+                hashFocusedClass: '@',
+                hash: '@'
+            },
+            link: function (scope, elem, attr) {
+                if ($location.hash() == scope.hash) {
+                    elem.addClass(scope.hashFocusedClass);
+                }
+            }
+        };
+    }])
     .directive('autofocus', function () {
         return {
             restrict: 'A',

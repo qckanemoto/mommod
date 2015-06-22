@@ -31,46 +31,4 @@ angular.module('mommodApp')
             return promise;
         };
     }])
-    .constant('mockThread', [
-        {
-            id: 2,
-            content: 'test comment',
-            stargazers: [
-                'user1'
-            ],
-            created_at: new Date(),
-            updated_at: null
-        },
-        {
-            id: 4,
-            content: 'test comment',
-            stargazers: [
-                'user2',
-                'user3'
-            ],
-            created_at: new Date(),
-            updated_at: null
-        },
-        {
-            id: 5,
-            content: 'test comment',
-            stargazers: [
-                'user1',
-                'user2'
-            ],
-            created_at: new Date(),
-            updated_at: null
-        },
-        {
-            id: 6,
-            content: 'test comment',
-            stargazers: [
-                'user1',
-                'user2',
-                'user3'
-            ],
-            created_at: new Date(),
-            updated_at: null
-        }
-    ])
 ;

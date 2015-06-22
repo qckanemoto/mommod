@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
     <li><a ng-href="#/">Topic list</a></li>
-    <li class="active">Topic #{{ topic.id }}</li>
+    <li><a ng-href="#/topic/{{ topic.id }}">Topic #{{ topic.id }}</a></li>
 </ol>
 
 <h2 ng-hide="topic.isEditing" ng-class="{ 'text-muted': topic.closed }">{{ topic.get('title') }}</h2>
@@ -41,10 +41,15 @@
 
 <!-- comments -->
 <div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment" id="comment-{{ comment.id }}">
-    <div class="panel panel-default">
+    <div class="panel panel-default" hash-focused-class="panel-info" hash="comment-{{ comment.id }}">
         <div class="panel-heading clearfix">
             <div class="pull-left">
-                <date-anchor-link date="{{ comment.createdAt | date: 'yyyy-MM-dd HH:mm' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link>
+                <ul class="list-inline" style="margin-bottom: 0;">
+                    <li><date-anchor-link date="{{ comment.createdAt | date: 'yyyy-MM-dd HH:mm' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link></li>
+                    <li ng-if="comment.get('replyTo')">
+                        <a class="btn btn-link btn-xs" ng-href="#/topic/{{ topic.id }}#comment-{{ comment.get('replyTo').id }}"><i class="fa fa-reply"></i> Replying</a>
+                    </li>
+                </ul>
             </div>
             <div class="pull-right">
                 <span ng-click="comment.isEditing = true" ng-hide="comment.isEditing" class="btn btn-link btn-xs"><i class="fa fa-pencil"></i></span>
@@ -67,9 +72,6 @@
 
         <ul class="list-group">
             <li class="list-group-item clearfix">
-                <div class="pull-left">
-                    <a class="btn btn-default btn-sm" ng-href="#/thread/{{ comment.id }}"><i class="fa fa-comments"></i> View thread</a>
-                </div>
                 <div class="pull-right">
                     <span ng-click="$parent.replyTo = ($parent.replyTo == comment ? null : comment)" class="btn btn-default btn-sm" ng-class="{ active: $parent.replyTo == comment }"><i class="fa fa-reply"></i> Reply</span>
                     <!--span ng-click="toggleStar(comment)" class="btn btn-default btn-sm"><i class="fa" ng-class="isStarred(comment) ? 'fa-star' : 'fa-star-o'"></i> {{ comment.stargazers.length }}</span-->
