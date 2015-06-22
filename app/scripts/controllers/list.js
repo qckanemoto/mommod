@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('ListCtrl', [
-        '$scope', '$rootScope', '$location', 'assertSignedIn',
-        function ($scope, $rootScope, $location, assertSignedIn) {
+        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn', 'cachedParseQuery',
+        function ($scope, $rootScope, $location, $timeout, assertSignedIn, cachedParseQuery) {
 
             assertSignedIn();
 
@@ -18,38 +18,39 @@ angular.module('mommodApp')
                 comment: new Parse.Query('Comment')
             };
 
-            query.topic.include('user').find()
+            cachedParseQuery(query.topic.include('user'), 'find')
                 .then(function (topics) {
-                    $scope.$apply(function () {
-                        $scope.topics = topics;
-                    });
-                    return new Parse.Promise.as(topics);
+                    $scope.topics = topics;
+                    return Parse.Promise.as(topics);
                 })
                 .then(function (topics) {
                     // count joiners.
                     topics.forEach(function (topic) {
-                        $scope.$apply(function () {
-                            $scope.counts.joiners.push(_.keys(topic.getACL().toJSON()).length);
-                        });
+                        $scope.counts.joiners.push(_.keys(topic.getACL().toJSON()).length);
                     });
-                    return new Parse.Promise.as(topics);
+                    return Parse.Promise.as(topics);
                 })
                 .then(function (topics) {
                     // count comments.
-                    var promise = new Parse.Promise.as();
+                    var promise = Parse.Promise.as();
                     topics.forEach(function (topic) {
                         promise = promise
                             .then(function () {
-                                return query.comment.equalTo('topic', topic).count();
+                                return cachedParseQuery(query.comment.equalTo('topic', topic), 'count');
                             })
-                            .then(function (count) {
-                                $scope.$apply(function () {
-                                    $scope.counts.comments.push(count);
-                                });
+                            .done(function (count) {
+                                $scope.counts.comments.push(count);
+                            })
+                            .fail(function (error) {
+                                $scope.counts.comments.push('-');
                             })
                         ;
                     });
-                    return new Parse.Promise.as(topics);
+                    return promise;
+                })
+                .done(function () {
+                    // start $digest() loop if needed.
+                    $timeout();
                 })
                 .fail(function (error) {
                     $scope.$apply(function () {

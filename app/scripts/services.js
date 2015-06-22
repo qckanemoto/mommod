@@ -8,6 +8,29 @@ angular.module('mommodApp')
             }
         };
     }])
+    .factory('cachedParseQuery', ['$cacheFactory', function ($cacheFactory) {
+        return function (parseQuery, method) {
+            var parseCache = $cacheFactory.get('parseQuery') || $cacheFactory('parseQuery');
+
+            var key = JSON.stringify(parseQuery);
+
+            if (parseCache.get(key) != undefined) {
+                return Parse.Promise.as(parseCache.get(key));
+            }
+
+            var promise = new Parse.Promise();
+            parseQuery[method]()
+                .done(function (result) {
+                    parseCache.put(key, result);
+                    promise.resolve(result);
+                })
+                .fail(function (error) {
+                    promise.reject(error);
+                })
+            ;
+            return promise;
+        };
+    }])
     .constant('mockTopic', {
         id: 1,
         title: 'test topic test topic',
