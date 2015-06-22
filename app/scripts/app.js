@@ -10,7 +10,8 @@ angular
         'ngTouch',
         'hc.marked',
         'hljs',
-        'emoji'
+        'emoji',
+        'ui.bootstrap'
     ])
     .config(['$routeProvider', 'markedProvider', 'hljsServiceProvider', function ($routeProvider, markedProvider, hljsServiceProvider) {
         $routeProvider

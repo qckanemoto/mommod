@@ -1,29 +1,6 @@
 'use strict';
 
 angular.module('mommodApp')
-    .directive('editableMarkdownView', function () {
-        return {
-            restrict: 'E',
-            replace: true,
-            scope: {
-                content: '=',
-                submission: '=',
-                labelCancel: '@',
-                labelSubmit: '@',
-                labelDelete: '@'
-            },
-            templateUrl: 'views/directives/editable-markdown-view.html',
-            link: function (scope, elem, attr) {
-                scope.deletable = 'deletable' in attr;
-                scope.label = {
-                    cancel: scope.labelCancel || 'Cancel',
-                    submit: scope.labelSubmit || 'Submit',
-                    'delete': scope.labelDelete || 'Delete'
-                };
-                scope.editingContent = scope.content;
-            }
-        };
-    })
     .directive('markdownEditor', function () {
         return {
             restrict: 'E',

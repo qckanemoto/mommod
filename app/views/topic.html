@@ -3,18 +3,39 @@
     <li class="active">Topic #{{ topic.id }}</li>
 </ol>
 
-<h1>{{ topic.get('title') }}</h1>
+<h2 ng-hide="topic.isEditing" ng-class="{ 'text-muted': topic.closed }">{{ topic.get('title') }}</h2>
+<input ng-if="topic.isEditing" class="form-control input-lg" type="text" ng-model="topic.editingTitle" style="margin-bottom: .5em;" />
+
+<ul class="list-inline">
+    <li><span class="label label-sm label-{{ topic.get('closed') ? 'default' : 'primary' }}">{{ topic.get('closed') ? 'Closed' : 'Open' }}</span></li>
+    <li class="text-muted"><i class="fa fa-history"></i> {{ topic.updatedAt | date: 'yyyy-MM-dd HH:mm' }}</li>
+</ul>
 <hr/>
 
 <!-- topic -->
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
+        <dvi class="pull-left">
+            <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.createdAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+        </dvi>
         <div class="pull-right">
-            <span class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.createdAt | date: 'yyyy-MM-dd' }}</span>
+            <span ng-click="topic.isEditing = true" ng-hide="topic.isEditing" class="btn btn-link btn-xs"><i class="fa fa-pencil"></i></span>
+            <span ng-if="!topic.get('closed')" ng-click="updateTopicClosed(topic, true)" class="btn btn-link btn-xs" tooltip="Close"><i class="fa fa-ban"></i></span>
+            <span ng-if="topic.get('closed')" ng-click="updateTopicClosed(topic, false)" class="btn btn-link btn-xs" tooltip="Reopen"><i class="fa fa-circle"></i></span>
         </div>
     </div>
+
     <div class="panel-body">
-        <editable-markdown-view content="topic.get('content')" label-submit="Update description" submission="submission"></editable-markdown-view>
+        <div ng-show="topic.isEditing" class="clearfix">
+            <markdown-editor content="topic.editingContent"></markdown-editor>
+            <div class="pull-right">
+                <span ng-click="topic.isEditing = false" class="btn btn-default btn-sm">Cancel</span>
+                <span ng-click="updateTopic(topic)" class="btn btn-primary btn-sm">Update description</span>
+            </div>
+        </div>
+        <div ng-if="topic.get('content')" ng-hide="topic.isEditing">
+            <div marked="topic.get('content') | emoji"></div>
+        </div>
     </div>
 </div>
 
@@ -22,13 +43,26 @@
 <div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment" id="comment-{{ comment.id }}">
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
+            <div class="pull-left">
+                <date-anchor-link date="{{ comment.createdAt | date: 'yyyy-MM-dd HH:mm' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link>
+            </div>
             <div class="pull-right">
-                <date-anchor-link date="{{ comment.createdAt | date: 'yyyy-MM-dd' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link>
+                <span ng-click="comment.isEditing = true" ng-hide="comment.isEditing" class="btn btn-link btn-xs"><i class="fa fa-pencil"></i></span>
+                <span ng-click="deleteComment(comment)" class="btn btn-link btn-xs"><i class="fa fa-times"></i></span>
             </div>
         </div>
 
         <div class="panel-body">
-            <editable-markdown-view content="comment.get('content')" label-submit="Update comment" submission="submission" deletable></editable-markdown-view>
+            <div ng-show="comment.isEditing" class="clearfix">
+                <markdown-editor content="comment.editingContent"></markdown-editor>
+                <div class="pull-right">
+                    <span ng-click="comment.isEditing = false" class="btn btn-default btn-sm">Cancel</span>
+                    <span ng-click="updateComment(comment)" class="btn btn-primary btn-sm">Update Comment</span>
+                </div>
+            </div>
+            <div ng-if="comment.get('content')" ng-hide="comment.isEditing">
+                <div marked="comment.get('content') | emoji"></div>
+            </div>
         </div>
 
         <ul class="list-group">

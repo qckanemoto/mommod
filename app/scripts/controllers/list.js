@@ -18,7 +18,7 @@ angular.module('mommodApp')
                 comment: new Parse.Query('Comment')
             };
 
-            cachedParseQuery(query.topic.include('user'), 'find')
+            cachedParseQuery(query.topic.include('user').descending('updatedAt'), 'find')
                 .then(function (topics) {
                     $scope.topics = topics;
                     return Parse.Promise.as(topics);

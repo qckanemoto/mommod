@@ -9,6 +9,17 @@ angular.module('mommodApp')
 
             $scope.topic = null;
             $scope.comments = [];
+
+            // to separate original content and editing content of topic or comment.
+            var makeEditable = function (obj) {
+                obj.isEditing = false;
+                obj.editingContent = obj.get('content');
+                if (obj.get('title') != undefined) {
+                    obj.editingTitle = obj.get('title');
+                }
+                return obj;
+            };
+
             $scope.replyTo = null;
             $scope.commentContent = '';
 
@@ -20,13 +31,16 @@ angular.module('mommodApp')
             // get topic and comments.
             cachedParseQuery(query.topic.equalTo('objectId', $routeParams.topicId).include('user'), 'first')
                 .then(function (topic) {
-                    $scope.topic = topic;
+                    $scope.topic = makeEditable(topic);
                     return Parse.Promise.as(topic);
                 })
                 .then(function (topic) {
                     return cachedParseQuery(query.comment.equalTo('topic', topic).include('user').ascending('createdAt'), 'find');
                 })
                 .then(function (comments) {
+                    comments = _.map(comments, function (comment) {
+                        return makeEditable(comment);
+                    });
                     $scope.comments = comments;
                     return Parse.Promise.as();
                 })
@@ -38,26 +52,36 @@ angular.module('mommodApp')
                 })
             ;
 
+            // comment creator function.
             $scope.createComment = function () {
                 var acl = new Parse.ACL();
-                acl.setPublicReadAccess(true);
+                acl.setPublicReadAccess(true)
                 acl.setPublicWriteAccess(false);
                 acl.setReadAccess($rootScope.currentUser.id, true);
                 acl.setWriteAccess($rootScope.currentUser.id, true);
 
-                var topic = new Parse.Object('Comment');
-                topic
+                var comment = new Parse.Object('Comment');
+                comment
                     .set('content', $scope.commentContent)
                     .set('user', $rootScope.currentUser)
                     .set('topic', $scope.topic)
                     .set('replyTo', $scope.replyTo)
                     .setACL(acl)
                     .save()
-                    .done(function (comment) {
+                    .then(function (comment) {
                         $scope.$apply(function () {
-                            $scope.comments.push(comment);
+                            $scope.comments.push(makeEditable(comment));
                             $scope.commentContent = '';
                             $scope.replyTo = null;
+                        });
+                        return Parse.Promise.as();
+                    })
+                    .then(function () {
+                        return $scope.topic.save(); // just renew updatedAt of topic.
+                    })
+                    .done(function (topic) {
+                        $scope.$apply(function () {
+                            $scope.topic.updatedAt = topic.updatedAt;
                         });
                     })
                     .fail(function (error) {
@@ -72,12 +96,55 @@ angular.module('mommodApp')
                 ;
             };
 
-
-            $scope.submission = {};
-            $scope.$watch('submission', function () {
-                if ($scope.submission.submit) {
+            // updater functions.
+            $scope.updateTopic = function (topic) {
+                topic
+                    .set('title', topic.editingTitle)
+                    .set('content', topic.editingContent)
+                    .save()
+                    .done(function (topic) {
+                        $scope.$apply(function () {
+                            $scope.topic = makeEditable(topic);
+                        });
+                    })
+                ;
+            };
+            $scope.updateComment = function (comment) {
+                comment.set('content', comment.editingContent).save()
+                    .done(function (comment) {
+                        $scope.$apply(function () {
+                            var target = _.findWhere($scope.comments, { id: comment.id });
+                            var index = _.indexOf($scope.comments, target);
+                            $scope.comments[index] = makeEditable(comment);
+                        });
+                    })
+                ;
+            };
+            $scope.updateTopicClosed = function (topic, closed) {
+                if (confirm((closed ? 'Close' : 'Reopen') + ' this topic?')) {
+                    topic.set('closed', closed).save()
+                        .done(function (topic) {
+                            $scope.$apply(function () {
+                                $scope.topic = makeEditable(topic);
+                            });
+                        })
+                    ;
                 }
-            });
+            };
+            $scope.deleteComment = function (comment) {
+                if (confirm('Delete this comment?')) {
+                    comment.destroy()
+                        .done(function (comment) {
+                            $scope.$apply(function () {
+                                var target = _.findWhere($scope.comments, { id: comment.id });
+                                var index = _.indexOf($scope.comments, target);
+                                delete $scope.comments[index];
+                                $scope.comments = _.compact($scope.comments);
+                            });
+                        })
+                    ;
+                }
+            };
 
             $scope.isStarred = function (comment) {
                 return comment.stargazers.indexOf($scope.myUserName) > -1;

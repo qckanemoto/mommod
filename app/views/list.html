@@ -19,6 +19,7 @@
             <td>{{ topic.get('title') }}</td>
             <td class="fixed">
                 <ul class="list-inline">
+                    <li><span class="label label-xs label-{{ topic.get('closed') ? 'default' : 'primary' }}">{{ topic.get('closed') ? 'Closed' : 'Open' }}</span></li>
                     <li><i class="fa fa-users"></i> {{ counts.joiners[$index] }}</li>
                     <li><i class="fa fa-comment-o"></i> {{ counts.comments[$index] }}</li>
                 </ul>
