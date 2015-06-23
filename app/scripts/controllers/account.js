@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('AccountCtrl', [
-        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn',
-        function ($scope, $rootScope, $location, $timeout, assertSignedIn) {
+        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn', 'ngToast',
+        function ($scope, $rootScope, $location, $timeout, assertSignedIn, ngToast) {
 
             assertSignedIn();
 
@@ -43,11 +43,7 @@ angular.module('mommodApp')
                         $timeout();
                     })
                     .fail(function (error) {
-                        $rootScope.alert = {
-                            type: 'danger',
-                            message: '[' + error.code + '] ' + error.message,
-                            path: $location.path()
-                        };
+                        ngToast.create('[' + error.code + '] ' + error.message);
                         $rootScope.spinner = false;
                         $timeout();
                     })

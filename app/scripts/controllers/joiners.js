@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('JoinersCtrl', [
-        '$scope', '$rootScope', '$location', '$routeParams', '$timeout', 'assertSignedIn', 'cachedParseQuery',
-        function ($scope, $rootScope, $location, $routeParams, $timeout, assertSignedIn, cachedParseQuery) {
+        '$scope', '$rootScope', '$location', '$routeParams', '$timeout', 'assertSignedIn', 'cachedParseQuery', 'ngToast',
+        function ($scope, $rootScope, $location, $routeParams, $timeout, assertSignedIn, cachedParseQuery, ngToast) {
 
             assertSignedIn();
 
@@ -47,11 +47,7 @@ angular.module('mommodApp')
                     if ($scope.topic) {
                         $location.path('topic/' + $scope.topic.id);
                     }
-                    $rootScope.alert = {
-                        type: 'danger',
-                        message: '[' + error.code + '] ' + error.message,
-                        path: $location.path()
-                    };
+                    ngToast.create('[' + error.code + '] ' + error.message);
                     $timeout();
                 })
             ;

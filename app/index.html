@@ -10,8 +10,10 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/fontawesome/css/font-awesome.css" />
     <link rel="stylesheet" href="bower_components/highlightjs/styles/default.css" />
+    <link rel="stylesheet" href="bower_components/ngtoast/dist/ngToast.css" />
     <!-- endbower -->
     <link rel="stylesheet" href="bower_components/angular-emoji-filter/dist/emoji.min.css" />
+    <link rel="stylesheet" href="bower_components/ngtoast/dist/ngToast-animations.min.css" />
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
@@ -19,6 +21,7 @@
     <!-- endbuild -->
 </head>
 <body ng-app="mommodApp">
+<toast></toast>
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
@@ -59,11 +62,6 @@
 </div>
 
 <div class="container">
-    <div ng-show="alert" class="alert alert-{{ alert.type || 'info' }} alert-dismissable">
-        <span ng-click="alert = null" class="close">&times;</span>
-        {{ alert.message }}
-    </div>
-
     <div ng-view="" autoscroll=""></div>
 </div>
 
@@ -106,6 +104,7 @@
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/angular-emoji-filter/dist/emoji.min.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/ngtoast/dist/ngToast.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 <script src="http://www.parsecdn.com/js/parse-1.2.13.min.js"></script>

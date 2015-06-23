@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('TopicCtrl', [
-        '$scope', '$rootScope', '$location', '$anchorScroll', '$routeParams', '$timeout', 'assertSignedIn', 'cachedParseQuery',
-        function ($scope, $rootScope, $location, $anchorScroll, $routeParams, $timeout, assertSignedIn, cachedParseQuery) {
+        '$scope', '$rootScope', '$location', '$anchorScroll', '$routeParams', '$timeout', 'assertSignedIn', 'cachedParseQuery', 'ngToast',
+        function ($scope, $rootScope, $location, $anchorScroll, $routeParams, $timeout, assertSignedIn, cachedParseQuery, ngToast) {
 
             assertSignedIn();
 
@@ -12,7 +12,7 @@ angular.module('mommodApp')
             $scope.stargazers = [];
             $scope.joinsers = [];
 
-            // to separate original content and editing content of topic or comment.
+            // add property of editing content which is separated from original content to topic/comment object.
             var makeEditable = function (obj) {
                 obj.isEditing = false;
                 obj.editingContent = obj.get('content');
@@ -79,11 +79,7 @@ angular.module('mommodApp')
                 })
                 .fail(function (error) {
                     $location.path('list');
-                    $rootScope.alert = {
-                        type: 'danger',
-                        message: '[' + error.code + '] ' + error.message,
-                        path: $location.path()
-                    };
+                    ngToast.create('[' + error.code + '] ' + error.message);
                     $timeout();
                 })
             ;
@@ -116,11 +112,7 @@ angular.module('mommodApp')
                         $timeout();
                     })
                     .fail(function (error) {
-                        $rootScope.alert = {
-                            type: 'danger',
-                            message: '[' + error.code + '] ' + error.message,
-                            path: $location.path()
-                        };
+                        ngToast.create('[' + error.code + '] ' + error.message);
                         $timeout();
                     })
                 ;

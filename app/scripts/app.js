@@ -11,9 +11,10 @@ angular
         'hc.marked',
         'hljs',
         'emoji',
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'ngToast'
     ])
-    .config(['$routeProvider', 'markedProvider', 'hljsServiceProvider', function ($routeProvider, markedProvider, hljsServiceProvider) {
+    .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: 'views/main.html',
@@ -41,8 +42,10 @@ angular
             })
             .otherwise({
                 redirectTo: '/'
-            });
-
+            })
+        ;
+    }])
+    .config(['markedProvider', function (markedProvider) {
         markedProvider
             .setOptions({
                 // todo: I don't know why but this kills autoscroll of ngView...
@@ -56,12 +59,24 @@ angular
                 sanitize: false,
                 smartLists: true,
                 smartypants: false
-            });
-
+            })
+        ;
+    }])
+    .config(['hljsServiceProvider', function (hljsServiceProvider) {
         hljsServiceProvider
             .setOptions({
                 tabReplace: '    '
             });
+    }])
+    .config(['ngToastProvider', function (ngToastProvider) {
+        ngToastProvider
+            .configure({
+                className: 'danger',
+                additionalClasses: 'clickable',
+                timeout: 5000,
+                animation: 'slide' // or 'fade'
+            })
+        ;
     }])
     .controller('SignOutCtrl', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) {
         $scope.signOut = function () {
@@ -70,7 +85,7 @@ angular
                 $rootScope.currentUser = null;
                 $location.path('/');
             }
-        }
+        };
     }])
     .run(['$rootScope', '$location', function ($rootScope, $location) {
 

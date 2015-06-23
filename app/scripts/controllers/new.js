@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('NewCtrl', [
-        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn',
-        function ($scope, $rootScope, $location, $timeout, assertSignedIn) {
+        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn', 'ngToast',
+        function ($scope, $rootScope, $location, $timeout, assertSignedIn, ngToast) {
 
             assertSignedIn();
 
@@ -26,19 +26,10 @@ angular.module('mommodApp')
                     .save()
                     .done(function (topic) {
                         $location.path('topic/' + topic.id);
-                        $rootScope.alert = {
-                            type: 'success',
-                            message: 'Topic is successfully created.',
-                            path: $location.path()
-                        };
                         $timeout();
                     })
                     .fail(function (error) {
-                        $rootScope.alert = {
-                            type: 'danger',
-                            message: '[' + error.code + '] ' + error.message,
-                            path: $location.path()
-                        };
+                        ngToast.create('[' + error.code + '] ' + error.message);
                         $timeout();
                     })
                 ;

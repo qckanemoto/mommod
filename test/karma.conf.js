@@ -38,6 +38,7 @@ module.exports = function(config) {
       'bower_components/underscore/underscore.js',
       'bower_components/angular-emoji-filter/dist/emoji.min.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+      'bower_components/ngtoast/dist/ngToast.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",

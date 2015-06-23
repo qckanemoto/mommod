@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('MainCtrl', [
-        '$scope', '$rootScope', '$location', '$timeout',
-        function ($scope, $rootScope, $location, $timeout) {
+        '$scope', '$rootScope', '$location', '$timeout', 'ngToast',
+        function ($scope, $rootScope, $location, $timeout, ngToast) {
             if ($rootScope.currentUser) {
                 $location.path('list');
             }
@@ -22,19 +22,10 @@ angular.module('mommodApp')
                     .done(function (user) {
                         $rootScope.currentUser = user;
                         $location.path('list');
-                        $rootScope.alert = {
-                            type: 'success',
-                            message: 'Successfully signed in.',
-                            path: $location.path()
-                        };
                         $timeout();
                     })
                     .fail(function (error) {
-                        $rootScope.alert = {
-                            type: 'danger',
-                            message: '[' + error.code + '] ' + error.message,
-                            path: $location.path()
-                        };
+                        ngToast.create('[' + error.code + '] ' + error.message);
                         $timeout();
                     })
                 ;
@@ -50,19 +41,15 @@ angular.module('mommodApp')
                     .done(function (user) {
                         $rootScope.currentUser = user;
                         $location.path('list');
-                        $rootScope.alert = {
-                            type: 'success',
-                            message: 'Successfully signed up.',
-                            path: $location.path()
-                        };
+                        ngToast.create({
+                            className: 'success',
+                            content: 'Successfully signed up :)',
+                            timeout: 3000
+                        });
                         $timeout();
                     })
                     .fail(function (error) {
-                        $rootScope.alert = {
-                            type: 'danger',
-                            message: '[' + error.code + '] ' + error.message,
-                            path: $location.path()
-                        };
+                        ngToast.create('[' + error.code + '] ' + error.message);
                         $timeout();
                     })
                 ;
