@@ -27,6 +27,7 @@ angular.module('mommodApp')
                             message: 'Successfully signed in.',
                             path: $location.path()
                         };
+                        $timeout();
                     })
                     .fail(function (error) {
                         $rootScope.alert = {
