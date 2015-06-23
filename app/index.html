@@ -47,6 +47,8 @@
                 <li class="dropdown">
                     <a ng-href="" class="dropdown-toggle clickable" data-toggle="dropdown"><i class="fa fa-user"></i> {{ currentUser.getUsername() }} <i class="caret"></i></a>
                     <ul class="dropdown-menu">
+                        <li><a ng-href="#/account"><i class="fa fa-cog"></i> Settings</a></li>
+                        <li class="divider"></li>
                         <li><a ng-controller="SignOutCtrl" ng-click="signOut()" class="clickable"><i class="fa fa-sign-out"></i> Sign out</a></li>
                     </ul>
                 </li>
@@ -116,6 +118,7 @@
 <script src="scripts/controllers/new.js"></script>
 <script src="scripts/controllers/topic.js"></script>
 <script src="scripts/controllers/joiners.js"></script>
+<script src="scripts/controllers/account.js"></script>
 <script src="scripts/services.js"></script>
 <script src="scripts/directives.js"></script>
 <!-- endbuild -->

@@ -30,6 +30,16 @@
     opacity: 0.7;
 }
 
+form {
+    .form-label.required {
+        &:after {
+            content: "*";
+            color: #d00;
+            margin-left: .3em;
+        }
+    }
+}
+
 .markdown-editor {
     .edit, .preview {
         min-height: 200px;

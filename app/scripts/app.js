@@ -35,6 +35,10 @@ angular
                 templateUrl: 'views/joiners.html',
                 controller: 'JoinersCtrl'
             })
+            .when('/account', {
+                templateUrl: 'views/account.html',
+                controller: 'AccountCtrl'
+            })
             .otherwise({
                 redirectTo: '/'
             });

@@ -1,0 +1,49 @@
+<ol class="breadcrumb">
+    <li class="active">Account settings</li>
+</ol>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form ng-submit="updateAccount()">
+            <div class="form-group">
+                <label class="form-label">User id</label>
+                <input ng-model="$parent.currentUser.id" class="form-control" type="text" disabled />
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Username</label>
+                <input ng-model="form.username" class="form-control" type="text" placeholder="johnsmith" required autofocus />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Display name</label>
+                <input ng-model="form.displayName" class="form-control" type="text" placeholder="John Smith" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input ng-model="form.password" class="form-control" type="password" placeholder="**********" />
+            </div>
+            <div class="form-group">
+                <label class="form-label required">Email address</label>
+                <input ng-model="form.email" class="form-control" type="email" placeholder="john.smith@gmail.com" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Avatar</label>
+                <div class="row">
+                    <div class="col-xs-4 col-sm-2">
+                        <img class="img-responsive img-rounded" src="https://avatars3.githubusercontent.com/u/4360663" />
+                    </div>
+                    <div class="col-xs-8 col-sm-10">
+                        <div class="input-group">
+                            <input class="form-control" type="file" />
+                            <div class="input-group-btn">
+                                <span ng-click="" class="btn btn-default">Cancel</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">Update account</button>
+            </div>
+        </form>
+    </div>
+</div>
