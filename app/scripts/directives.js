@@ -69,4 +69,24 @@ angular.module('mommodApp')
             }
         };
     })
+    .directive('spinnerModal', function () {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: 'views/directives/spinner-modal.html',
+            scope: {
+                trigger: '='
+            },
+            link: function (scope, elem, attr) {
+                elem.modal({
+                    backdrop: 'static',
+                    keyboard: false,
+                    show: false
+                });
+                scope.$watch('trigger', function () {
+                    elem.modal(scope.trigger ? 'show' : 'hide');
+                });
+            }
+        };
+    })
 ;

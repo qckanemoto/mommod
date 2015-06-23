@@ -6,6 +6,21 @@
     padding-bottom: 19px;
 }
 
+#spinner-modal {
+    .modal-dialog {
+        .modal-content {
+            border: none;
+            box-shadow: none;
+            background: none;
+            .modal-body {
+                padding-top: 40%;
+                color: #fff;
+                font-size: 3em;
+            }
+        }
+    }
+}
+
 .clickable:hover {
     cursor: pointer;
 }
