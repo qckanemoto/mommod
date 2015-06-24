@@ -104,4 +104,62 @@ angular.module('mommodApp')
             }
         };
     })
+
+    // star/unstar button with caching stargazer list.
+    .directive('starButton', ['$cacheFactory', '$timeout', 'parse', function ($cacheFactory, $timeout, parse) {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: 'views/directives/star-button.html',
+            scope: {
+                comment: '='
+            },
+            link: function (scope, elem, attr) {
+                var stargazersCache = $cacheFactory.get('stargazers') || $cacheFactory('stargazers');
+                scope.spinner = true;
+                parse.getStargazers(scope.comment, true)
+                    .done(function (stargazers) {
+                        stargazersCache.put(scope.comment.id, stargazers);
+                        scope.spinner = false;
+                        $timeout();
+                    })
+                ;
+
+                scope.isStarred = function (comment) {
+                    if (!Parse.User.current()) {
+                        return false;
+                    }
+                    var stargazers = stargazersCache.get(comment.id);
+                    return !!_.findWhere(stargazers, { id: Parse.User.current().id });  // cast to boolean.
+                };
+
+                scope.countStargazers = function (comment) {
+                    return _.toArray(stargazersCache.get(comment.id)).length;
+                };
+
+                scope.toggleStar = function (comment) {
+                    scope.spinner = true;
+                    if (scope.isStarred(comment)) {
+                        parse.unstar(comment).done(function () {
+                            var stargazers = stargazersCache.get(comment.id);
+                            var index = _.findIndex(stargazers, { id: Parse.User.current().id });
+                            delete stargazers[index];
+                            stargazers = _.compact(stargazers);
+                            stargazersCache.put(comment.id, stargazers);
+                            scope.spinner = false;
+                            $timeout();
+                        });
+                    } else {
+                        parse.star(comment).done(function () {
+                            var stargazers = stargazersCache.get(comment.id);
+                            stargazers.push(Parse.User.current());
+                            stargazersCache.put(comment.id, stargazers);
+                            scope.spinner = false;
+                            $timeout();
+                        });
+                    }
+                };
+            }
+        };
+    }])
 ;

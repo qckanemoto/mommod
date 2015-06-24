@@ -9,7 +9,6 @@ angular.module('mommodApp')
 
             $scope.topic = null;
             $scope.comments = [];
-            $scope.stargazers = [];
             $scope.joinsers = [];
             $scope.replyTo = null;
             $scope.commentContent = '';
@@ -25,7 +24,7 @@ angular.module('mommodApp')
                 return obj;
             };
 
-            // get topic, comments and stargazers of each comments.
+            // get topic, comments.
             $rootScope.spinner = true;
             parse.getTopic($routeParams.topicId)
                 .then(function (topic, joiners) {
@@ -37,14 +36,10 @@ angular.module('mommodApp')
                     $scope.lastCommentedAt = lastCommentedAt;
                     return parse.getComments(topic);
                 })
-                .then(function (comments) {
+                .done(function (comments) {
                     $scope.comments = _.map(comments, function (comment) {
                         return makeEditable(comment);
                     });
-                    return parse.getStargazersCollection(comments);
-                })
-                .done(function (stargazersCollection) {
-                    $scope.stargazers = stargazersCollection;
                     $rootScope.spinner = false;
                     $timeout();
                     $timeout($anchorScroll);  // anchorScroll after comments are rendered.
@@ -159,23 +154,6 @@ angular.module('mommodApp')
                         })
                     ;
                 }
-            };
-
-            $scope.isStarred = function (comment) {
-                if (Parse.User.current()) {
-                    return _.findWhere($scope.stargazers[comment.id], { id: Parse.User.current().id });
-                }
-                return false;
-            };
-
-            // star or unstar comment.
-            $scope.toggleStar = function (comment) {
-                parse.starComment(comment, !$scope.isStarred(comment))
-                    .done(function (stargazers) {
-                        $scope.stargazers[comment.id] = stargazers;
-                        $timeout();
-                    })
-                ;
             };
         }
     ])

@@ -111,7 +111,7 @@ angular.module('mommodApp')
             },
             postComment: function (form) {
                 var acl = new Parse.ACL();
-                acl.setPublicReadAccess(true);
+                acl.setPublicReadAccess(false);
                 acl.setPublicWriteAccess(false);
                 acl.setReadAccess(Parse.User.current().id, true);
                 acl.setWriteAccess(Parse.User.current().id, true);
@@ -133,19 +133,6 @@ angular.module('mommodApp')
                         );
                     });
             },
-            starComment: function (comment, star) {
-                var stargazers = comment.relation('stargazers');
-                if (star) {
-                    stargazers.add(Parse.User.current());
-                } else {
-                    stargazers.remove(Parse.User.current());
-                }
-                var that = this;
-                return comment.save()
-                    .done(function (comment) {
-                        return that.getStargazers(comment, true);
-                    });
-            },
             updateComment: function (comment, form) {
                 _.pairs(form).forEach(function (pair) {
                     comment.set(pair[0], pair[1]);
@@ -164,7 +151,14 @@ angular.module('mommodApp')
             },
             getStargazers: function (comment, force) {
                 force = force || false;
-                return cachedParseQuery.use(comment.relation('stargazers').query().ascending('username'), 'find', force);
+                var query = new Parse.Query('Star');
+                return cachedParseQuery.use(query.equalTo('comment', comment).ascending('user'), 'find', force)
+                    .done(function (stars) {
+                        var stargazers = _.map(stars, function (star) {
+                            return star.get('user');
+                        });
+                        return Parse.Promise.as(stargazers);
+                    });
             },
             getStargazersCollection: function (comments, force) {
                 force = force || false;
@@ -185,6 +179,30 @@ angular.module('mommodApp')
                 return promise
                     .done(function () {
                         return Parse.Promise.as(collection);
+                    });
+            },
+            star: function (comment) {
+                var acl = new Parse.ACL();
+                acl.setPublicReadAccess(false);
+                acl.setPublicWriteAccess(false);
+                acl.setReadAccess(Parse.User.current().id, true);
+                acl.setWriteAccess(Parse.User.current().id, true);
+
+                var star = new Parse.Object('Star');
+                return star
+                    .set('user', Parse.User.current())
+                    .set('comment', comment)
+                    .setACL(acl)
+                    .save()
+                    .done(function () {
+                        return Parse.Promise.as();
+                    });
+            },
+            unstar: function (comment) {
+                var query = new Parse.Query('Star');
+                return query.equalTo('comment', comment).equalTo('user', Parse.User.current()).first()
+                    .done(function (star) {
+                        return star.destroy();
                     });
             },
             getJoiners: function (topic, force) {
