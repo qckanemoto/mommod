@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('JoinersCtrl', [
-        '$scope', '$rootScope', '$location', '$routeParams', '$timeout', 'assertSignedIn', 'cachedParseQuery', 'ngToast',
-        function ($scope, $rootScope, $location, $routeParams, $timeout, assertSignedIn, cachedParseQuery, ngToast) {
+        '$scope', '$rootScope', '$location', '$routeParams', '$timeout', 'assertSignedIn', 'ngToast', 'parse',
+        function ($scope, $rootScope, $location, $routeParams, $timeout, assertSignedIn, ngToast, parse) {
 
             assertSignedIn();
 
@@ -11,17 +11,15 @@ angular.module('mommodApp')
             $scope.joiners = [];
             $scope.usernameToAdd = '';
 
-            var query = null;
-
             // get topic and joiners.
-            query = new Parse.Query('Topic');
-            cachedParseQuery(query.equalTo('objectId', $routeParams.topicId).include('user'), 'first')
+            $rootScope.spinner = true;
+            parse.getTopic($routeParams.topicId)
                 .then(function (topic) {
                     var promise = new Parse.Promise();
 
                     // reject user don't have read access.
                     if (!topic) {
-                        promise.reject({code: -1, message: 'You have no read access.'});
+                        promise.reject({code: '000', message: 'You have no read access.'});
                         return promise;
                     }
 
@@ -29,56 +27,64 @@ angular.module('mommodApp')
 
                     // reject user don't have write access.
                     if (!topic.getACL().getWriteAccess($rootScope.currentUser.id)) {
-                        promise.reject({code: -2, message: 'You have no write access.'});
+                        promise.reject({code: '000', message: 'You have no write access.'});
                         return promise;
                     }
 
                     // get joiners.
-                    var userIds = _.keys(topic.getACL().toJSON());
-                    query = new Parse.Query('_User');
-                    return cachedParseQuery(query.containedIn('objectId', userIds).ascending('username'), 'find');
+                    return parse.getJoiners(topic);
                 })
                 .done(function (joiners) {
                     $scope.joiners = joiners;
+                    $rootScope.spinner = false;
                     $timeout();
                 })
                 .fail(function (error) {
-                    $location.path('list');
                     if ($scope.topic) {
                         $location.path('topic/' + $scope.topic.id);
+                    } else {
+                        $location.path('list');
                     }
                     ngToast.create('[' + error.code + '] ' + error.message);
+                    $rootScope.spinner = false;
                     $timeout();
                 })
             ;
 
-            // form functions.
             $scope.addJoiner = function () {
-                query = new Parse.Query('_User');
-                cachedParseQuery(query.equalTo('username', $scope.usernameToAdd), 'first')
-                    .then(function (user) {
-                        $scope.topic.getACL().setReadAccess(user.id, true);
-                        var topicPromise = $scope.topic.save();
-                        return Parse.Promise.when(topicPromise, Parse.Promise.as(user));
-                    })
-                    .done(function (topic, user) {
-                        $scope.joiners.push(user);
+                $rootScope.spinner = true;
+                parse.addJoiner($scope.topic, $scope.usernameToAdd)
+                    .done(function (user, joiners) {
+                        $scope.joiners = joiners;
                         $scope.usernameToAdd = '';
+                        $rootScope.spinner = false;
+                        $timeout();
+                    })
+                    .fail(function (error) {
+                        ngToast.create('[' + error.code + '] ' + error.message);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                 ;
             };
+
             $scope.removeJoiner = function (user) {
-                $scope.topic.getACL().setReadAccess(user.id, false);
-                Parse.Promise.when($scope.topic.save(), Parse.Promise.as(user))
-                    .done(function (topic, user) {
-                        var target = _.findWhere($scope.joiners, { id: user.id });
-                        var index = _.indexOf($scope.joiners, target);
-                        delete $scope.joiners[index];
-                        $scope.joiners = _.compact($scope.joiners);
-                        $timeout();
-                    })
-                ;
+                if (confirm('Remove "' + user.get('username') + '"?')) {
+                    parse.removeJoiner($scope.topic, user)
+                        .done(function (user) {
+                            var index = _.findIndex($scope.joiners, {id: user.id});
+                            delete $scope.joiners[index];
+                            $scope.joiners = _.compact($scope.joiners);
+                            $rootScope.spinner = false;
+                            $timeout();
+                        })
+                        .fail(function (error) {
+                            ngToast.create('[' + error.code + '] ' + error.message);
+                            $rootScope.spinner = false;
+                            $timeout();
+                        })
+                    ;
+                }
             };
         }
     ])

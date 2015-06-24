@@ -171,6 +171,42 @@ angular.module('mommodApp')
                     .done(function () {
                         return Parse.Promise.as(collection);
                     });
+            },
+            getJoiners: function (topic, force) {
+                force = force || false;
+                var userIds = _.keys(topic.getACL().toJSON());
+                var query = new Parse.Query('_User');
+                return cachedParseQuery(query.containedIn('objectId', userIds).ascending('username'), 'find', force);
+            },
+            addJoiner: function (topic, username) {
+                var that = this;
+                var query = new Parse.Query('_User');
+                return cachedParseQuery(query.equalTo('username', username), 'first')
+                    .then(function (user) {
+                        if (!user) {
+                            var promise = new Parse.Promise();
+                            promise.reject({ code: '000', message: 'No such user.' });
+                            return promise;
+                        }
+                        topic.getACL().setReadAccess(user.id, true);
+                        return Parse.Promise.when(
+                            topic.save(),
+                            Parse.Promise.as(user)
+                        );
+                    })
+                    .done(function (topic, user) {
+                        return Parse.Promise.when(
+                            Parse.Promise.as(user),
+                            that.getJoiners(topic, true)    // update joiner list.
+                        );
+                    });
+            },
+            removeJoiner: function (topic, user) {
+                topic.getACL().setReadAccess(user.id, false);
+                return topic.save()
+                    .done(function () {
+                        return Parse.Promise.as(user)
+                    });
             }
         };
     }])
