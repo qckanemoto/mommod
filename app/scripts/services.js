@@ -17,12 +17,15 @@ angular.module('mommodApp')
                 var parseCache = $cacheFactory.get('parseQuery') || $cacheFactory('parseQuery');
                 var key = JSON.stringify(parseQuery) + '#' + method;
 
-                if ((parseCache.get(key) != undefined) && !force) {
+                if ((parseCache.get(key) !== undefined) && !force) {
                     return Parse.Promise.as(parseCache.get(key));
                 }
 
                 return parseQuery[method]()
                     .done(function (result) {
+                        if (result == undefined) {
+                            result = null;
+                        }
                         parseCache.put(key, result);
                         return Parse.Promise.as(result);
                     })
