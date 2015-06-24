@@ -26,7 +26,7 @@ angular.module('mommodApp')
                     $scope.topic = topic;
 
                     // reject user don't have write access.
-                    if (!topic.getACL().getWriteAccess($rootScope.currentUser.id)) {
+                    if (Parse.User.current() && !topic.getACL().getWriteAccess(Parse.User.current().id)) {
                         promise.reject({code: '000', message: 'You have no write access.'});
                         return promise;
                     }

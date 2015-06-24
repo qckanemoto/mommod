@@ -53,15 +53,13 @@ angular.module('mommodApp')
         };
     }])
 
-    // autofocus again after $viewContentLoaded.
+    // autofocus after every rendering.
     .directive('autofocus', function () {
         return {
             restrict: 'A',
             scope: false,
             link: function (scope, elem, attr) {
-                scope.$on('$viewContentLoaded', function () {
-                    elem.focus();
-                });
+                elem.focus();
             }
         };
     })
@@ -83,6 +81,25 @@ angular.module('mommodApp')
                 });
                 scope.$watch('trigger', function () {
                     elem.modal(scope.trigger ? 'show' : 'hide');
+                });
+            }
+        };
+    })
+
+    // hide element when current user don't have write access to the Parse.Object.
+    .directive('parseHide', function () {
+        return {
+            restrict: 'A',
+            scope: {
+                parseHide: '='
+            },
+            link: function (scope, elem, attr) {
+                scope.$watch('parseHide', function () {
+                    if (scope.parseHide) {
+                        if (!scope.parseHide.getACL().getWriteAccess(Parse.User.current())) {
+                            elem.hide();
+                        }
+                    }
                 });
             }
         };

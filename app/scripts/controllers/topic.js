@@ -157,7 +157,10 @@ angular.module('mommodApp')
             };
 
             $scope.isStarred = function (comment) {
-                return _.findWhere($scope.stargazers[comment.id], { id: $rootScope.currentUser.id });
+                if (Parse.User.current()) {
+                    return _.findWhere($scope.stargazers[comment.id], { id: Parse.User.current().id });
+                }
+                return false;
             };
 
             // star or unstar comment.

@@ -78,12 +78,13 @@ angular
             })
         ;
     }])
-    .controller('SignOutCtrl', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) {
+    .controller('SignOutCtrl', ['$scope', '$rootScope', '$location', '$timeout', function ($scope, $rootScope, $location, $timeout) {
         $scope.signOut = function () {
             if (confirm('Sign out?')) {
                 Parse.User.logOut();
                 $rootScope.currentUser = null;
                 $location.path('/');
+                $timeout();
             }
         };
     }])
