@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('TopicCtrl', [
-        '$scope', '$rootScope', '$location', '$anchorScroll', '$routeParams', '$timeout', 'assertSignedIn', 'cachedParseQuery', 'ngToast',
-        function ($scope, $rootScope, $location, $anchorScroll, $routeParams, $timeout, assertSignedIn, cachedParseQuery, ngToast) {
+        '$scope', '$rootScope', '$location', '$anchorScroll', '$routeParams', '$timeout', 'assertSignedIn', 'cachedParseQuery', 'ngToast', 'parse',
+        function ($scope, $rootScope, $location, $anchorScroll, $routeParams, $timeout, assertSignedIn, cachedParseQuery, ngToast, parse) {
 
             assertSignedIn();
 
@@ -11,6 +11,8 @@ angular.module('mommodApp')
             $scope.comments = [];
             $scope.stargazers = [];
             $scope.joinsers = [];
+            $scope.replyTo = null;
+            $scope.commentContent = '';
 
             // add property of editing content which is separated from original content to topic/comment object.
             var makeEditable = function (obj) {
@@ -22,56 +24,43 @@ angular.module('mommodApp')
                 return obj;
             };
 
-            $scope.replyTo = null;
-            $scope.commentContent = '';
+            // get and store comments and stargazers of each comments to scope.
+            var getComments = function (topic, force) {
+                force = force || false;
+                $rootScope.spinner = true;
+                return parse.getComments(topic, force)
+                    .then(function (comments) {
+                        comments = _.map(comments, function (comment) {
+                            return makeEditable(comment);
+                        });
+                        $scope.comments = comments;
 
-            var query = null;
-
-            // get topic and comments and stargazers.
-            query = new Parse.Query('Topic');
-            cachedParseQuery(query.equalTo('objectId', $routeParams.topicId).include('user'), 'first')
-                .then(function (topic) {
-                    var promise = new Parse.Promise();
-
-                    // reject user don't have read access.
-                    if (!topic) {
-                        promise.reject({ code: -1, message: 'You have no read access.' });
+                        var promise = new Parse.Promise.as(comments);
+                        comments.forEach(function (comment) {
+                            promise = promise
+                                .then(function () {
+                                    return parse.getStargazers(comment)
+                                })
+                                .done(function (stargazers) {
+                                    $scope.stargazers[comment.id] = stargazers;
+                                })
+                            ;
+                        });
                         return promise;
-                    }
+                    })
+                    .done(function () {
+                        $rootScope.spinner = false;
+                        $timeout();
+                    });
+            };
 
+            // get topic, comments and stargazers of each comments.
+            $rootScope.spinner = true;
+            parse.getTopic($routeParams.topicId)
+                .then(function (topic, joiners) {
                     $scope.topic = makeEditable(topic);
-
-                    // get joiners.
-                    var userIds = _.keys(topic.getACL().toJSON());
-                    query = new Parse.Query('_User');
-                    var joinersPromise = cachedParseQuery(query.containedIn('objectId', userIds).ascending('username'), 'find');
-
-                    return Parse.Promise.when(joinersPromise, Parse.Promise.as(topic));
-                })
-                .then(function (joiners, topic) {
                     $scope.joiners = joiners;
-
-                    query = new Parse.Query('Comment');
-                    return cachedParseQuery(query.equalTo('topic', topic).include('user').ascending('createdAt'), 'find');
-                })
-                .then(function (comments) {
-                    comments = _.map(comments, function (comment) {
-                        return makeEditable(comment);
-                    });
-                    $scope.comments = comments;
-
-                    var promise = Parse.Promise.as();
-                    comments.forEach(function (comment) {
-                        promise = promise
-                            .then(function () {
-                                return cachedParseQuery(comment.relation('stargazers').query(), 'find');
-                            })
-                            .done(function (stargazers) {
-                                $scope.stargazers[comment.id] = stargazers;
-                            })
-                        ;
-                    });
-                    return promise;
+                    return getComments(topic);
                 })
                 .done(function () {
                     $timeout();
@@ -80,118 +69,124 @@ angular.module('mommodApp')
                 .fail(function (error) {
                     $location.path('list');
                     ngToast.create('[' + error.code + '] ' + error.message);
+                    $rootScope.spinner = false;
                     $timeout();
                 })
             ;
 
-            // comment creator function.
-            $scope.createComment = function () {
-                var acl = new Parse.ACL();
-                acl.setPublicReadAccess(true)
-                acl.setPublicWriteAccess(false);
-                acl.setReadAccess($rootScope.currentUser.id, true);
-                acl.setWriteAccess($rootScope.currentUser.id, true);
+            //-------------------------------------------------------------------------------------
+            // scope functions.
+            //-------------------------------------------------------------------------------------
 
-                var comment = new Parse.Object('Comment');
-                comment
-                    .set('content', $scope.commentContent)
-                    .set('user', $rootScope.currentUser)
-                    .set('topic', $scope.topic)
-                    .set('replyTo', $scope.replyTo)
-                    .setACL(acl)
-                    .save()
-                    .then(function (comment) {
-                        $scope.comments.push(makeEditable(comment));
+            $scope.postComment = function () {
+                $rootScope.spinner = true;
+                parse.postComment({
+                    content: $scope.commentContent,
+                    topic: $scope.topic,
+                    replyTo: $scope.replyTo
+                })
+                    .then(function () {
                         $scope.commentContent = '';
                         $scope.replyTo = null;
-
+                        return getComments($scope.topic, true);
+                    })
+                    .then(function () {
                         return $scope.topic.save(); // just renew updatedAt of topic.
                     })
                     .done(function (topic) {
                         $scope.topic.updatedAt = topic.updatedAt;
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                     .fail(function (error) {
                         ngToast.create('[' + error.code + '] ' + error.message);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                 ;
             };
 
-            // updater functions.
+            $scope.deleteComment = function (comment) {
+                if (confirm('Delete this comment?')) {
+                    $rootScope.spinner = true;
+                    parse.deleteComment(comment)
+                        .then(function () {
+                            return getComments($scope.topic, true);
+                        })
+                        .done(function () {
+                            $rootScope.spinner = false;
+                            //console.log($scope.comments);
+                            $timeout();
+                        })
+                        .fail(function (error) {
+                            ngToast.create('[' + error.code + '] ' + error.message);
+                            $rootScope.spinner = false;
+                            $timeout();
+                        })
+                    ;
+                }
+            };
+
             $scope.updateTopic = function (topic) {
-                topic
-                    .set('title', topic.editingTitle)
-                    .set('content', topic.editingContent)
-                    .save()
+                $rootScope.spinner = true;
+                parse.updateTopic(topic, {
+                    title: topic.editingTitle,
+                    content: topic.editingContent
+                })
                     .done(function (topic) {
                         $scope.topic = makeEditable(topic);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                 ;
             };
+
             $scope.updateComment = function (comment) {
-                comment.set('content', comment.editingContent).save()
+                $rootScope.spinner = true;
+                parse.updateComment(comment, { content: comment.editingContent })
                     .done(function (comment) {
-                        var target = _.findWhere($scope.comments, { id: comment.id });
-                        var index = _.indexOf($scope.comments, target);
+                        var index = _.findIndex($scope.comments, { id: comment.id });
                         $scope.comments[index] = makeEditable(comment);
+                        $rootScope.spinner = false;
+                        $timeout();
+                    })
+                    .fail(function (error) {
+                        ngToast.create('[' + error.code + '] ' + error.message);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                 ;
             };
+
+            // close or reopen topic.
             $scope.updateTopicClosed = function (topic, closed) {
                 if (confirm((closed ? 'Close' : 'Reopen') + ' this topic?')) {
-                    topic.set('closed', closed).save()
+                    parse.updateTopic(topic, { closed: closed })
                         .done(function (topic) {
                             $scope.topic = makeEditable(topic);
                             $timeout();
                         })
-                    ;
-                }
-            };
-            $scope.deleteComment = function (comment) {
-                if (confirm('Delete this comment?')) {
-                    comment.destroy()
-                        .done(function (comment) {
-                            var target = _.findWhere($scope.comments, { id: comment.id });
-                            var index = _.indexOf($scope.comments, target);
-                            delete $scope.comments[index];
-                            $scope.comments = _.compact($scope.comments);
+                        .fail(function (error) {
+                            ngToast.create('[' + error.code + '] ' + error.message);
+                            $rootScope.spinner = false;
                             $timeout();
                         })
                     ;
                 }
             };
 
-            // star related functions.
             $scope.isStarred = function (comment) {
                 return _.findWhere($scope.stargazers[comment.id], { id: $rootScope.currentUser.id });
             };
-            $scope.toggleStar = function (comment) {
-                var me = $rootScope.currentUser;
-                var stargazers = comment.relation('stargazers');
 
-                if (!$scope.isStarred(comment)) {
-                    stargazers.add(me);
-                    comment.save()
-                        .done(function (comment) {
-                            $scope.stargazers[comment.id].push($rootScope.currentUser);
-                            $timeout();
-                        })
-                    ;
-                } else {
-                    stargazers.remove(me);
-                    comment.save()
-                        .done(function (comment) {
-                            var target = _.findWhere($scope.stargazers[comment.id], { id: me.id });
-                            var index = _.indexOf($scope.stargazers[comment.id], target);
-                            delete $scope.stargazers[comment.id][index];
-                            $scope.stargazers[comment.id] = _.compact($scope.stargazers[comment.id]);
-                            $timeout();
-                        })
-                    ;
-                }
+            // star or unstar comment.
+            $scope.toggleStar = function (comment) {
+                parse.starComment(comment, !$scope.isStarred(comment))
+                    .done(function (stargazers) {
+                        $scope.stargazers[comment.id] = stargazers;
+                        $timeout();
+                    })
+                ;
             };
         }
     ])

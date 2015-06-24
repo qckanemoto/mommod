@@ -4,7 +4,9 @@
 </ol>
 
 <h2 ng-hide="topic.isEditing" ng-class="{ 'text-muted': topic.closed }">{{ topic.get('title') }}</h2>
-<input ng-if="topic.isEditing" class="form-control input-lg" type="text" ng-model="topic.editingTitle" style="margin-bottom: .5em;" />
+<div ng-show="topic.isEditing" style="margin-bottom: .7em;">
+    <input class="form-control" type="text" ng-model="topic.editingTitle" />
+</div>
 
 <div class="clearfix">
     <ul class="list-inline pull-left">
@@ -82,7 +84,7 @@
                 <div class="pull-right">
                     <span ng-click="$parent.replyTo = ($parent.replyTo == comment ? null : comment)" class="btn btn-default btn-sm" ng-class="{ active: $parent.replyTo == comment }"><i class="fa fa-reply"></i> Reply</span>
 
-                    <span ng-click="toggleStar(comment)" class="btn btn-default btn-sm">
+                    <span ng-click="toggleStar(comment)" class="btn btn-default btn-sm" ng-class="{ 'btn-warning': isStarred(comment) }">
                         <i class="fa" ng-class="isStarred(comment) ? 'fa-star' : 'fa-star-o'"></i> {{ stargazers[comment.id].length }}
                     </span>
                 </div>
@@ -98,7 +100,7 @@
         <div ng-show="replyTo"><b><i class="fa fa-reply"></i> Reply to this comment</b></div>
     </div>
     <div class="panel-body">
-        <form ng-submit="createComment()">
+        <form ng-submit="postComment()">
             <markdown-editor content="commentContent"></markdown-editor>
             <input type="hidden" value="{{ commentContent }}" />
             <div class="text-right">
