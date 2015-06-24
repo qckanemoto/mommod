@@ -54,7 +54,7 @@
         <div class="panel-heading clearfix">
             <div class="pull-left">
                 <ul class="list-inline" style="margin-bottom: 0;">
-                    <li><date-anchor-link date="{{ comment.createdAt | date: 'yyyy-MM-dd HH:mm' }}" base-url="#/topic/{{ topic.id }}" hash="comment-{{ comment.id }}"></date-anchor-link></li>
+                    <li><a ng-href="#/topic/{{ topic.id }}#comment-{{ comment.id }}"><i class="fa fa-clock-o"></i> {{ comment.createdAt | date: 'yyyy-MM-dd HH:mm' }}</a></li>
                     <li ng-if="comment.get('replyTo')">
                         <a class="btn btn-link btn-xs" ng-href="#/topic/{{ topic.id }}#comment-{{ comment.get('replyTo').id }}"><i class="fa fa-reply"></i> Replying</a>
                     </li>

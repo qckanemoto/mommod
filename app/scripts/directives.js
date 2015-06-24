@@ -1,6 +1,8 @@
 'use strict';
 
 angular.module('mommodApp')
+
+    // offer markdown editor.
     .directive('markdownEditor', function () {
         return {
             restrict: 'E',
@@ -15,6 +17,8 @@ angular.module('mommodApp')
             }
         };
     })
+
+    // add href feature to any element.
     .directive('anyHref', ['$location', function ($location) {
         return {
             restrict: 'A',
@@ -32,6 +36,8 @@ angular.module('mommodApp')
             }
         };
     }])
+
+    // add class to the specified element by location hash.
     .directive('hashFocusedClass', ['$location', function ($location) {
         return {
             restrict: 'A',
@@ -46,6 +52,8 @@ angular.module('mommodApp')
             }
         };
     }])
+
+    // autofocus again after $viewContentLoaded.
     .directive('autofocus', function () {
         return {
             restrict: 'A',
@@ -57,18 +65,8 @@ angular.module('mommodApp')
             }
         };
     })
-    .directive('dateAnchorLink', function () {
-        return {
-            restrict: 'E',
-            replace: true,
-            templateUrl: 'views/directives/date-anchor-link.html',
-            scope: {
-                date: '@',
-                baseUrl: '@',
-                hash: '@'
-            }
-        };
-    })
+
+    // turn on/off spinner-modal by true/false of 'trigger'.
     .directive('spinnerModal', function () {
         return {
             restrict: 'E',
