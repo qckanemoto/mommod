@@ -13,6 +13,7 @@ angular.module('mommodApp')
             $scope.joinsers = [];
             $scope.replyTo = null;
             $scope.commentContent = '';
+            $scope.lastCommentedAt = null;
 
             // add property of editing content which is separated from original content to topic/comment object.
             var makeEditable = function (obj) {
@@ -30,6 +31,10 @@ angular.module('mommodApp')
                 .then(function (topic, joiners) {
                     $scope.topic = makeEditable(topic);
                     $scope.joiners = joiners;
+                    return Parse.Promise.when(Parse.Promise.as(topic), parse.getLastCommentedAt($scope.topic));
+                })
+                .then(function (topic, lastCommentedAt) {
+                    $scope.lastCommentedAt = lastCommentedAt;
                     return parse.getComments(topic);
                 })
                 .then(function (comments) {
@@ -63,13 +68,13 @@ angular.module('mommodApp')
                     topic: $scope.topic,
                     replyTo: $scope.replyTo
                 })
-                    .done(function (comment, comments, topic) {
+                    .done(function (comment, comments) {
                         $scope.commentContent = '';
                         $scope.replyTo = null;
                         $scope.comments = _.map(comments, function (comment) {
                             return makeEditable(comment);
                         });
-                        $scope.topic.updatedAt = topic.updatedAt;
+                        $scope.lastCommentedAt = new Date();
                         $rootScope.spinner = false;
                         $timeout();
                     })

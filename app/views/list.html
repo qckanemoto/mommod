@@ -10,7 +10,7 @@
             <th>Title</th>
             <th>Status</th>
             <th>Created at</th>
-            <th>Updated at</th>
+            <th>Last commented at</th>
         </tr>
         </thead>
         <tbody>
@@ -20,12 +20,12 @@
             <td class="fixed">
                 <ul class="list-inline" style="margin-bottom: 0;">
                     <li><span class="label label-xs label-{{ topic.get('closed') ? 'default' : 'primary' }}">{{ topic.get('closed') ? 'Closed' : 'Open' }}</span></li>
-                    <li><i class="fa fa-users"></i> {{ topic.count.joiners }}</li>
-                    <li><i class="fa fa-comment-o"></i> {{ topic.count.comments }}</li>
+                    <li><i class="fa fa-users"></i> {{ joinerCounts[topic.id] }}</li>
+                    <li><i class="fa fa-comment-o"></i> {{ commentCounts[topic.id] }}</li>
                 </ul>
             </td>
             <td class="fixed">{{ topic.createdAt | date: 'yyyy-MM-dd' }}</td>
-            <td class="fixed">{{ topic.updatedAt | date: 'yyyy-MM-dd' }}</td>
+            <td class="fixed">{{ lastCommentedAts[topic.id] | date: 'yyyy-MM-dd' }}</td>
         </tr>
         </tbody>
     </table>

@@ -8,6 +8,9 @@ angular.module('mommodApp')
             assertSignedIn();
 
             $scope.topics = [];
+            $scope.joinerCounts = [];
+            $scope.commentCounts = [];
+            $scope.lastCommentedAts = [];
 
             // get topics.
             $rootScope.spinner = true;
@@ -15,11 +18,25 @@ angular.module('mommodApp')
                 .then(function (topics) {
                     $scope.topics = topics;
 
+                    // get lastCommentedAts.
+                    var promise = Parse.Promise.as();
+                    topics.forEach(function (topic) {
+                        promise = promise
+                            .then(function () {
+                                return parse.getLastCommentedAt(topic);
+                            })
+                            .done(function (lastCommentedAt) {
+                                $scope.lastCommentedAts[topic.id] = lastCommentedAt;
+                            })
+                        ;
+                    });
+                    return Parse.Promise.when(Parse.Promise.as(topics), promise);
+                })
+                .then(function (topics) {
                     // count joiners.
                     topics.forEach(function (topic) {
                         var count = _.keys(topic.getACL().toJSON()).length;
-                        var index = _.findIndex($scope.topics, { id: topic.id });
-                        $scope.topics[index].count = { joiners: count };
+                        $scope.joinerCounts[topic.id] = count;
                     });
 
                     // count comments.
@@ -30,8 +47,7 @@ angular.module('mommodApp')
                                 return parse.countComments(topic);
                             })
                             .done(function (count) {
-                                var index = _.findIndex($scope.topics, { id: topic.id });
-                                $scope.topics[index].count.comments = count;
+                                $scope.commentCounts[topic.id] = count;
                             })
                             .fail(function () {
                                 $scope.counts.comments.push('-');

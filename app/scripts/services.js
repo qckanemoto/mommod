@@ -83,6 +83,14 @@ angular.module('mommodApp')
                 });
                 return topic.save();
             },
+            getLastCommentedAt: function (topic, force) {
+                force = force || false;
+                var query = new Parse.Query('Comment');
+                return cachedParseQuery(query.equalTo('topic', topic).descending('createdAt'), 'first')
+                    .done(function (comment) {
+                        return Parse.Promise.as(comment.createdAt);
+                    });
+            },
             getComments: function (topic, force) {
                 force = force || false;
                 var query = new Parse.Query('Comment');
@@ -113,8 +121,7 @@ angular.module('mommodApp')
                     .done(function (comment) {
                         return Parse.Promise.when(
                             Parse.Promise.as(comment),
-                            that.getComments(comment.get('topic'), true),   // update comment list.
-                            that.updateTopic(comment.get('topic'))  // just renew updatedAt of topic.
+                            that.getComments(comment.get('topic'), true)   // update comment list.
                         );
                     });
             },
