@@ -78,16 +78,20 @@ angular
             })
         ;
     }])
-    .controller('SignOutCtrl', ['$scope', '$rootScope', '$location', '$timeout', function ($scope, $rootScope, $location, $timeout) {
-        $scope.signOut = function () {
-            if (confirm('Sign out?')) {
-                Parse.User.logOut();
-                $rootScope.currentUser = null;
-                $location.path('/');
-                $timeout();
-            }
-        };
-    }])
+    .controller('SignOutCtrl', [
+        '$scope', '$rootScope', '$location', '$timeout', 'cachedParseQuery',
+        function ($scope, $rootScope, $location, $timeout, cachedParseQuery) {
+            $scope.signOut = function () {
+                if (confirm('Sign out?')) {
+                    Parse.User.logOut();
+                    cachedParseQuery.destroy();
+                    $rootScope.currentUser = null;
+                    $location.path('/');
+                    $timeout();
+                }
+            };
+        }
+    ])
     .run(['$rootScope', '$location', function ($rootScope, $location) {
 
         // restore currentUser from session.

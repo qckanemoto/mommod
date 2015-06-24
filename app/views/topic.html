@@ -12,7 +12,7 @@
     <ul class="list-inline pull-left">
         <li><span class="label label-sm label-{{ topic.get('closed') ? 'default' : 'primary' }}">{{ topic.get('closed') ? 'Closed' : 'Open' }}</span></li>
         <li class="text-muted"><i class="fa fa-comment-o"></i> {{ comments.length }}</li>
-        <li class="text-muted"><i class="fa fa-history"></i> {{ lastCommentedAt | date: 'yyyy-MM-dd HH:mm' }}</li>
+        <li ng-show="lastCommentedAt" class="text-muted"><i class="fa fa-history"></i> {{ lastCommentedAt | date: 'yyyy-MM-dd HH:mm' }}</li>
     </ul>
     <ul class="list-inline pull-right">
         <li class="text-muted"><i class="fa fa-users"></i></li>

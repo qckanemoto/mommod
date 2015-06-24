@@ -11,21 +11,26 @@ angular.module('mommodApp')
 
     // cache api access to parse.com.
     .factory('cachedParseQuery', ['$cacheFactory', function ($cacheFactory) {
-        return function (parseQuery, method, force) {
-            force = force || false;
-            var parseCache = $cacheFactory.get('parseQuery') || $cacheFactory('parseQuery');
-            var key = JSON.stringify(parseQuery) + '#' + method;
+        return {
+            use: function (parseQuery, method, force) {
+                force = force || false;
+                var parseCache = $cacheFactory.get('parseQuery') || $cacheFactory('parseQuery');
+                var key = JSON.stringify(parseQuery) + '#' + method;
 
-            if ((parseCache.get(key) != undefined) && !force) {
-                return Parse.Promise.as(parseCache.get(key));
+                if ((parseCache.get(key) != undefined) && !force) {
+                    return Parse.Promise.as(parseCache.get(key));
+                }
+
+                return parseQuery[method]()
+                    .done(function (result) {
+                        parseCache.put(key, result);
+                        return Parse.Promise.as(result);
+                    })
+            },
+            destroy: function () {
+                $cacheFactory.get('parseQuery').removeAll();
             }
-
-            return parseQuery[method]()
-                .done(function (result) {
-                    parseCache.put(key, result);
-                    return Parse.Promise.as(result);
-                })
-        };
+        }
     }])
 
     // api access to parse.com.
@@ -34,12 +39,12 @@ angular.module('mommodApp')
             getTopics: function (force) {
                 force = force || false;
                 var query = new Parse.Query('Topic');
-                return cachedParseQuery(query.include('user').descending('updatedAt'), 'find', force);
+                return cachedParseQuery.use(query.include('user').descending('updatedAt'), 'find', force);
             },
             getTopic: function (topicId, force) {
                 force = force || false;
                 var query = new Parse.Query('Topic');
-                return cachedParseQuery(query.equalTo('objectId', topicId).include('user'), 'first', force)
+                return cachedParseQuery.use(query.equalTo('objectId', topicId).include('user'), 'first', force)
                     .done(function (topic) {
                         // reject user don't have read access.
                         if (!topic) {
@@ -50,7 +55,7 @@ angular.module('mommodApp')
                         // get joiners.
                         var userIds = _.keys(topic.getACL().toJSON());
                         query = new Parse.Query('_User');
-                        var joinersPromise = cachedParseQuery(query.containedIn('objectId', userIds).ascending('username'), 'find');
+                        var joinersPromise = cachedParseQuery.use(query.containedIn('objectId', userIds).ascending('username'), 'find');
 
                         return Parse.Promise.when(Parse.Promise.as(topic), joinersPromise);
                     })
@@ -86,20 +91,23 @@ angular.module('mommodApp')
             getLastCommentedAt: function (topic, force) {
                 force = force || false;
                 var query = new Parse.Query('Comment');
-                return cachedParseQuery(query.equalTo('topic', topic).descending('createdAt'), 'first')
+                return cachedParseQuery.use(query.equalTo('topic', topic).descending('createdAt'), 'first', force)
                     .done(function (comment) {
-                        return Parse.Promise.as(comment.createdAt);
+                        if (comment) {
+                            return Parse.Promise.as(comment.createdAt);
+                        }
+                        return Parse.Promise.as(null);
                     });
             },
             getComments: function (topic, force) {
                 force = force || false;
                 var query = new Parse.Query('Comment');
-                return cachedParseQuery(query.equalTo('topic', topic).include('user').ascending('createdAt'), 'find', force);
+                return cachedParseQuery.use(query.equalTo('topic', topic).include('user').ascending('createdAt'), 'find', force);
             },
             countComments: function (topic, force) {
                 force = force || false;
                 var query = new Parse.Query('Comment');
-                return cachedParseQuery(query.equalTo('topic', topic), 'count', force);
+                return cachedParseQuery.use(query.equalTo('topic', topic), 'count', force);
             },
             postComment: function (form) {
                 var acl = new Parse.ACL();
@@ -156,7 +164,7 @@ angular.module('mommodApp')
             },
             getStargazers: function (comment, force) {
                 force = force || false;
-                return cachedParseQuery(comment.relation('stargazers').query().ascending('username'), 'find', force);
+                return cachedParseQuery.use(comment.relation('stargazers').query().ascending('username'), 'find', force);
             },
             getStargazersCollection: function (comments, force) {
                 force = force || false;
@@ -183,12 +191,12 @@ angular.module('mommodApp')
                 force = force || false;
                 var userIds = _.keys(topic.getACL().toJSON());
                 var query = new Parse.Query('_User');
-                return cachedParseQuery(query.containedIn('objectId', userIds).ascending('username'), 'find', force);
+                return cachedParseQuery.use(query.containedIn('objectId', userIds).ascending('username'), 'find', force);
             },
             addJoiner: function (topic, username) {
                 var that = this;
                 var query = new Parse.Query('_User');
-                return cachedParseQuery(query.equalTo('username', username), 'first')
+                return cachedParseQuery.use(query.equalTo('username', username), 'first')
                     .then(function (user) {
                         if (!user) {
                             var promise = new Parse.Promise();
