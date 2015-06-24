@@ -4,6 +4,7 @@ angular.module('mommodApp')
     .controller('MainCtrl', [
         '$scope', '$rootScope', '$location', '$timeout', 'ngToast',
         function ($scope, $rootScope, $location, $timeout, ngToast) {
+
             if ($rootScope.currentUser) {
                 $location.path('list');
             }
@@ -15,23 +16,26 @@ angular.module('mommodApp')
                 email: '',
                 password: ''
             };
-            $scope.error = {};
 
             $scope.signIn = function () {
+                $rootScope.spinner = true;
                 Parse.User.logIn($scope.user.username, $scope.user.password)
                     .done(function (user) {
                         $rootScope.currentUser = user;
                         $location.path('list');
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                     .fail(function (error) {
                         ngToast.create('[' + error.code + '] ' + error.message);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                 ;
             };
 
             $scope.signUp = function () {
+                $rootScope.spinner = true;
                 var user = new Parse.User();
                 user
                     .set('username', $scope.user.username)
@@ -46,10 +50,12 @@ angular.module('mommodApp')
                             content: 'Successfully signed up :)',
                             timeout: 3000
                         });
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                     .fail(function (error) {
                         ngToast.create('[' + error.code + '] ' + error.message);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                 ;

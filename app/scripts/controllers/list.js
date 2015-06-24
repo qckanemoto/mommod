@@ -2,26 +2,23 @@
 
 angular.module('mommodApp')
     .controller('ListCtrl', [
-        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn', 'cachedParseQuery',
-        function ($scope, $rootScope, $location, $timeout, assertSignedIn, cachedParseQuery) {
+        '$scope', '$rootScope', '$timeout', 'assertSignedIn', 'ngToast', 'parse',
+        function ($scope, $rootScope, $timeout, assertSignedIn, ngToast, parse) {
 
             assertSignedIn();
 
             $scope.topics = [];
 
-            var query = null;
-
             // get topics.
-            query = new Parse.Query('Topic');
-            cachedParseQuery(query.include('user').descending('updatedAt'), 'find')
+            $rootScope.spinner = true;
+            parse.getTopics()
                 .then(function (topics) {
                     $scope.topics = topics;
 
                     // count joiners.
                     topics.forEach(function (topic) {
                         var count = _.keys(topic.getACL().toJSON()).length;
-                        var target = _.findWhere($scope.topics, { id: topic.id });
-                        var index = _.indexOf($scope.topics, target);
+                        var index = _.findIndex($scope.topics, { id: topic.id });
                         $scope.topics[index].count = { joiners: count };
                     });
 
@@ -30,15 +27,13 @@ angular.module('mommodApp')
                     topics.forEach(function (topic) {
                         promise = promise
                             .then(function () {
-                                query = new Parse.Query('Comment');
-                                return cachedParseQuery(query.equalTo('topic', topic), 'count');
+                                return parse.countComments(topic);
                             })
                             .done(function (count) {
-                                var target = _.findWhere($scope.topics, { id: topic.id });
-                                var index = _.indexOf($scope.topics, target);
+                                var index = _.findIndex($scope.topics, { id: topic.id });
                                 $scope.topics[index].count.comments = count;
                             })
-                            .fail(function (error) {
+                            .fail(function () {
                                 $scope.counts.comments.push('-');
                             })
                         ;
@@ -46,14 +41,12 @@ angular.module('mommodApp')
                     return promise;
                 })
                 .done(function () {
+                    $rootScope.spinner = false;
                     $timeout();
                 })
                 .fail(function (error) {
-                    $rootScope.alert = {
-                        type: 'danger',
-                        message: '[' + error.code + '] ' + error.message,
-                        path: $location.path()
-                    };
+                    ngToast.create('[' + error.code + '] ' + error.message);
+                    $rootScope.spinner = false;
                     $timeout();
                 })
             ;

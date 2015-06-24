@@ -31,6 +31,11 @@ angular.module('mommodApp')
     // api access to parse.com.
     .factory('parse', ['cachedParseQuery', function (cachedParseQuery) {
         return {
+            getTopics: function (force) {
+                force = force || false;
+                var query = new Parse.Query('Topic');
+                return cachedParseQuery(query.include('user').descending('updatedAt'), 'find', force);
+            },
             getTopic: function (topicId, force) {
                 force = force || false;
                 var query = new Parse.Query('Topic');
@@ -51,16 +56,42 @@ angular.module('mommodApp')
                     })
                 ;
             },
+            postTopic: function (form) {
+                var acl = new Parse.ACL();
+                acl.setPublicReadAccess(false);
+                acl.setPublicWriteAccess(false);
+                acl.setReadAccess(Parse.User.current().id, true);
+                acl.setWriteAccess(Parse.User.current().id, true);
+
+                var that = this;
+
+                var topic = new Parse.Object('Topic');
+                return topic
+                    .set('title', form.title)
+                    .set('content', form.content)
+                    .set('user', Parse.User.current())
+                    .setACL(acl)
+                    .save()
+                    .done(function (topic) {
+                        that.getTopics(true);  // update topic list.
+                        return Parse.Promise.as(topic);
+                    });
+            },
+            updateTopic: function (topic, form) {
+                _.pairs(form).forEach(function (pair) {
+                    topic.set(pair[0], pair[1]);
+                });
+                return topic.save();
+            },
             getComments: function (topic, force) {
                 force = force || false;
                 var query = new Parse.Query('Comment');
                 return cachedParseQuery(query.equalTo('topic', topic).include('user').ascending('createdAt'), 'find', force);
             },
-            getStargazers: function (comment, force) {
+            countComments: function (topic, force) {
                 force = force || false;
-                return cachedParseQuery(comment.relation('stargazers').query().ascending('username'), 'find', force);
-            },
-            postTopic: function (form) {
+                var query = new Parse.Query('Comment');
+                return cachedParseQuery(query.equalTo('topic', topic), 'count', force);
             },
             postComment: function (form) {
                 var acl = new Parse.ACL();
@@ -68,6 +99,8 @@ angular.module('mommodApp')
                 acl.setPublicWriteAccess(false);
                 acl.setReadAccess(Parse.User.current().id, true);
                 acl.setWriteAccess(Parse.User.current().id, true);
+
+                var that = this;
 
                 var comment = new Parse.Object('Comment');
                 return comment
@@ -77,7 +110,13 @@ angular.module('mommodApp')
                     .set('replyTo', form.replyTo)
                     .setACL(acl)
                     .save()
-                ;
+                    .done(function (comment) {
+                        return Parse.Promise.when(
+                            Parse.Promise.as(comment),
+                            that.getComments(comment.get('topic'), true),   // update comment list.
+                            that.updateTopic(comment.get('topic'))  // just renew updatedAt of topic.
+                        );
+                    });
             },
             starComment: function (comment, star) {
                 var stargazers = comment.relation('stargazers');
@@ -90,14 +129,7 @@ angular.module('mommodApp')
                 return comment.save()
                     .done(function (comment) {
                         return that.getStargazers(comment, true);
-                    })
-                ;
-            },
-            updateTopic: function (topic, form) {
-                _.pairs(form).forEach(function (pair) {
-                    topic.set(pair[0], pair[1]);
-                });
-                return topic.save();
+                    });
             },
             updateComment: function (comment, form) {
                 _.pairs(form).forEach(function (pair) {
@@ -106,7 +138,39 @@ angular.module('mommodApp')
                 return comment.save();
             },
             deleteComment: function (comment) {
-                return comment.destroy();
+                var that = this;
+                return comment.destroy()
+                    .done(function (comment) {
+                        return Parse.Promise.when(
+                            comment,
+                            that.getComments(comment.get('topic'), true)    // update comment list.
+                        );
+                    });
+            },
+            getStargazers: function (comment, force) {
+                force = force || false;
+                return cachedParseQuery(comment.relation('stargazers').query().ascending('username'), 'find', force);
+            },
+            getStargazersCollection: function (comments, force) {
+                force = force || false;
+                var collection = [];
+                var that = this;
+                var promise = Parse.Promise.as();
+                comments.forEach(function (comment) {
+                    promise = promise
+                        .then(function () {
+                            return that.getStargazers(comment, force);
+                        })
+                        .done(function (stargazers) {
+                            collection[comment.id] = stargazers;
+                            return Parse.Promise.as();
+                        })
+                    ;
+                });
+                return promise
+                    .done(function () {
+                        return Parse.Promise.as(collection);
+                    });
             }
         };
     }])

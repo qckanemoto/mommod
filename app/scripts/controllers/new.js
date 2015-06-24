@@ -2,8 +2,8 @@
 
 angular.module('mommodApp')
     .controller('NewCtrl', [
-        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn', 'ngToast',
-        function ($scope, $rootScope, $location, $timeout, assertSignedIn, ngToast) {
+        '$scope', '$rootScope', '$location', '$timeout', 'assertSignedIn', 'ngToast', 'parse',
+        function ($scope, $rootScope, $location, $timeout, assertSignedIn, ngToast, parse) {
 
             assertSignedIn();
 
@@ -11,25 +11,19 @@ angular.module('mommodApp')
             $scope.content = '';
 
             $scope.createTopic = function () {
-                var acl = new Parse.ACL();
-                acl.setPublicReadAccess(false);
-                acl.setPublicWriteAccess(false);
-                acl.setReadAccess($rootScope.currentUser.id, true);
-                acl.setWriteAccess($rootScope.currentUser.id, true);
-
-                var topic = new Parse.Object('Topic');
-                topic
-                    .set('title', $scope.title)
-                    .set('content', $scope.content)
-                    .set('user', $rootScope.currentUser)
-                    .setACL(acl)
-                    .save()
+                $rootScope.spinner = true;
+                parse.postTopic({
+                    title: $scope.title,
+                    content: $scope.content
+                })
                     .done(function (topic) {
                         $location.path('topic/' + topic.id);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                     .fail(function (error) {
                         ngToast.create('[' + error.code + '] ' + error.message);
+                        $rootScope.spinner = false;
                         $timeout();
                     })
                 ;
