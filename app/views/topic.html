@@ -25,7 +25,7 @@
 <!-- topic -->
 <div class="row">
     <div class="hidden-xs col-sm-1">
-        <img class="topic-avatar" ng-src="{{ topic.get('user').get('avatarUrl') || '/images/default-avatar.png' }}" />
+        <img class="topic-avatar" ng-src="{{ topic.get('user').get('avatarUrl') || 'images/default-avatar.png' }}" />
     </div>
     <div class="col-xs-12 col-sm-11">
         <div class="panel panel-default">
@@ -63,7 +63,7 @@
 <div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment" id="comment-{{ comment.id }}">
     <div class="row">
         <div class="hidden-xs col-sm-1">
-            <img class="topic-avatar" ng-src="{{ comment.get('user').get('avatarUrl') || '/images/default-avatar.png' }}" />
+            <img class="topic-avatar" ng-src="{{ comment.get('user').get('avatarUrl') || 'images/default-avatar.png' }}" />
         </div>
         <div class="col-xs-12 col-sm-11">
             <div class="panel panel-default" hash-focused-class="panel-info" hash="comment-{{ comment.id }}">

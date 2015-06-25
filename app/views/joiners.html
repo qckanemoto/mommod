@@ -29,7 +29,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="joiner in joiners">
-            <td><img class="list-avatar" ng-src="{{ joiner.get('avatarUrl') || '/images/default-avatar.png' }}" style="margin-right: 1em;" />{{ joiner.get('username') }}</td>
+            <td><img class="list-avatar" ng-src="{{ joiner.get('avatarUrl') || 'images/default-avatar.png' }}" style="margin-right: 1em;" />{{ joiner.get('username') }}</td>
             <td>
                 <ul class="list-inline" style="margin-bottom: 0;">
                     <li ng-if="joiner.id != $parent.currentUser.id"><span ng-click="removeJoiner(joiner)" class="btn btn-danger btn-xs">Remove</span></li>
