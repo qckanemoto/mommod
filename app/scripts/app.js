@@ -85,23 +85,18 @@ angular
                 if (confirm('Sign out?')) {
                     Parse.User.logOut();
                     cachedParseQuery.destroy();
-                    $rootScope.currentUser = null;
                     $location.path('/');
                     $timeout();
                 }
             };
         }
     ])
-    .run(['$rootScope', '$location', function ($rootScope, $location) {
-
-        // restore currentUser from session.
-        $rootScope.currentUser = Parse.User.current();
-
-        // remove alert after move page.
+    .run(['$rootScope', '$timeout', 'parse', function ($rootScope, $timeout, parse) {
         $rootScope.$on('$locationChangeSuccess', function () {
-            if ($rootScope.alert && $rootScope.alert.path != $location.path()) {
-                delete $rootScope.alert;
-            }
+            parse.loadCurrentUserWithAvatarUrl().done(function (user) {
+                $rootScope.currentUser = user;
+                $timeout();
+            });
         });
     }])
 ;

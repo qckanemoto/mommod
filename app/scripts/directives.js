@@ -162,4 +162,25 @@ angular.module('mommodApp')
             }
         };
     }])
+
+    .directive('fileModel', ['$timeout', function ($timeout) {
+        return {
+            restrict: 'A',
+            scope: {
+                fileModel: '='
+            },
+            link: function (scope, elem, attr) {
+                elem.on('change', function () {
+                    scope.fileModel = elem[0].files[0];
+                    $timeout();
+                });
+                scope.$watch('fileModel', function () {
+                    if (!scope.fileModel) {
+                        elem.val(null);
+                        $timeout();
+                    }
+                })
+            }
+        };
+    }])
 ;
