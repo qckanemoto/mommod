@@ -163,6 +163,7 @@ angular.module('mommodApp')
         };
     }])
 
+    // set file object to model via input[type=file].
     .directive('fileModel', ['$timeout', function ($timeout) {
         return {
             restrict: 'A',
