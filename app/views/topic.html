@@ -16,7 +16,7 @@
     </ul>
     <ul class="list-inline pull-right">
         <li class="text-muted"><i class="fa fa-users"></i></li>
-        <li ng-repeat="joiner in joiners">{{ joiner.get('username') }}</li>
+        <li ng-repeat="joiner in joiners">{{ joiner.getDisplayName() }}</li>
         <li parse-hide="topic" acl="write"><a class="btn btn-default btn-xs" ng-href="#/topic/{{ topic.id }}/joiners" tooltip="Manage joiners"><i class="fa fa-cog"></i></a></li>
     </ul>
 </div>
@@ -25,14 +25,14 @@
 <!-- topic -->
 <div class="row">
     <div class="hidden-xs col-sm-1">
-        <img class="topic-avatar" ng-src="{{ topic.get('user').get('avatarUrl') || 'images/default-avatar.png' }}" />
+        <img class="topic-avatar" ng-src="{{ topic.get('user').getAvatarUrl() }}" />
     </div>
     <div class="col-xs-12 col-sm-11">
         <div class="panel panel-default">
             <div class="panel-heading clearfix">
                 <dvi class="pull-left">
                     <ul class="list-inline" style="margin-bottom: 0;">
-                        <li><b><i class="fa fa-user"></i> {{ topic.get('user').get('username') }}</b></li>
+                        <li><b><i class="fa fa-user"></i> {{ topic.get('user').getDisplayName() }}</b></li>
                         <li class="text-muted"><i class="fa fa-clock-o"></i> {{ topic.createdAt | date: 'yyyy-MM-dd HH:mm' }}</li>
                     </ul>
                 </dvi>
@@ -63,14 +63,14 @@
 <div ng-repeat="comment in comments" ng-show="!replyTo || replyTo == comment" id="comment-{{ comment.id }}">
     <div class="row">
         <div class="hidden-xs col-sm-1">
-            <img class="topic-avatar" ng-src="{{ comment.get('user').get('avatarUrl') || 'images/default-avatar.png' }}" />
+            <img class="topic-avatar" ng-src="{{ comment.get('user').getAvatarUrl() }}" />
         </div>
         <div class="col-xs-12 col-sm-11">
             <div class="panel panel-default" hash-focused-class="panel-info" hash="comment-{{ comment.id }}">
                 <div class="panel-heading clearfix">
                     <div class="pull-left">
                         <ul class="list-inline" style="margin-bottom: 0;">
-                            <li><b><i class="fa fa-user"></i> {{ comment.get('user').get('username') }}</b></li>
+                            <li><b><i class="fa fa-user"></i> {{ comment.get('user').getDisplayName() }}</b></li>
                             <li><a ng-href="#/topic/{{ topic.id }}#comment-{{ comment.id }}"><i class="fa fa-clock-o"></i> {{ comment.createdAt | date: 'yyyy-MM-dd HH:mm' }}</a></li>
                             <li ng-if="comment.get('replyTo')">
                                 <a class="btn btn-link btn-xs" ng-href="#/topic/{{ topic.id }}#comment-{{ comment.get('replyTo').id }}"><i class="fa fa-reply"></i> Replying</a>

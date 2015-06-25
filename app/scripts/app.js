@@ -92,6 +92,16 @@ angular
         }
     ])
     .run(['$rootScope', '$timeout', function ($rootScope, $timeout) {
+        // extend Parse.User first of all.
+        Parse.User.extend({
+            getDisplayName: function () {
+                return this.get('displayName') || this.get('username');
+            },
+            getAvatarUrl: function () {
+                return this.get('avatarUrl') || 'images/default-avatar.png';
+            }
+        });
+
         $rootScope.$on('$locationChangeSuccess', function () {
             $rootScope.currentUser = Parse.User.current();
             $timeout();
