@@ -15,7 +15,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="topic in topics" any-href="#/topic/{{ topic.id }}" class="clickable">
-            <td>{{ topic.get('user').get('username') }}</td>
+            <td><img class="list-avatar" ng-src="{{ topic.get('user').get('avatarUrl') || '/images/default-avatar.png' }}" tooltip="{{ topic.get('user').get('username') }}" /></td>
             <td>{{ topic.get('title') }}</td>
             <td class="fixed">
                 <ul class="list-inline" style="margin-bottom: 0;">

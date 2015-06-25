@@ -11,8 +11,8 @@ angular.module('mommodApp')
             $scope.file = null;
 
             $scope.form = {
-                username: Parse.User.current().getUsername(),
-                email: Parse.User.current().getEmail(),
+                username: Parse.User.current().get('username'),
+                email: Parse.User.current().get('email'),
                 displayName: Parse.User.current().get('displayName'),
                 password: ''
             };
