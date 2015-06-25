@@ -9,9 +9,10 @@ angular.module('mommodApp')
 
             $scope.topic = null;
             $scope.joiners = [];
+            $scope.usernames = [];
             $scope.usernameToAdd = '';
 
-            // get topic and joiners.
+            // get topic and joiners, and all usernames for typeahead..
             $rootScope.spinner = true;
             parse.getTopic($routeParams.topicId)
                 .then(function (topic) {
@@ -34,8 +35,23 @@ angular.module('mommodApp')
                     // get joiners.
                     return parse.getJoiners(topic);
                 })
-                .done(function (joiners) {
+                .then(function (joiners) {
                     $scope.joiners = joiners;
+
+                    // get all usernames.
+                    return parse.getUsernames()
+                        .done(function (usernames) {
+                            usernames = _.reject(usernames, function (username) {
+                                var joinernames = _.map(joiners, function (joiner) {
+                                    return joiner.get('username');
+                                });
+                                return _.contains(joinernames, username);
+                            });
+                            $scope.usernames = usernames;
+                        })
+                    ;
+                })
+                .done(function () {
                     $rootScope.spinner = false;
                     $timeout();
                 })

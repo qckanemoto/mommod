@@ -210,6 +210,17 @@ angular.module('mommodApp')
                         return star.destroy();
                     });
             },
+            getUsernames: function (force) {
+                force = force || false;
+                var query = new Parse.Query('_User');
+                return cachedParseQuery.use(query.select(['username']), 'find', force)
+                    .done(function (users) {
+                        var usernames = _.map(users, function (user) {
+                            return user.get('username');
+                        });
+                        return Parse.Promise.as(usernames);
+                    });
+            },
             getJoiners: function (topic, force) {
                 force = force || false;
                 var userIds = _.keys(topic.getACL().toJSON());
