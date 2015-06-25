@@ -91,12 +91,10 @@ angular
             };
         }
     ])
-    .run(['$rootScope', '$timeout', 'parse', function ($rootScope, $timeout, parse) {
+    .run(['$rootScope', '$timeout', function ($rootScope, $timeout) {
         $rootScope.$on('$locationChangeSuccess', function () {
-            parse.loadCurrentUserWithAvatarUrl().done(function (user) {
-                $rootScope.currentUser = user;
-                $timeout();
-            });
+            $rootScope.currentUser = Parse.User.current();
+            $timeout();
         });
     }])
 ;

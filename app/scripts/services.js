@@ -254,49 +254,23 @@ angular.module('mommodApp')
 
                 var promise = Parse.Promise.as();
 
-                // save avatar first.
+                // save avatarFile and get uploaded file's url first.
                 if (avatarFile) {
                     var parseFile = new Parse.File(avatarFile.name, avatarFile);
                     promise = promise
                         .then(function () {
                             return parseFile.save();
-                        }).done(function () {
-                            var avatar = new Parse.Object('Avatar');
-                            return avatar
-                                .set('image', parseFile)
-                                .save()
-                                .done(function (avatar) {
-                                    return Parse.Promise.as(avatar);
-                                });
+                        })
+                        .done(function () {
+                            user.set('avatarUrl', parseFile.url());
+                            return Parse.Promise.as();
                         });
                 }
 
                 // save user.
                 return promise
-                    .done(function (avatar) {
-                        if (avatar) {
-                            user.set('avatar', avatar);
-                        }
+                    .done(function () {
                         return user.save();
-                    });
-            },
-            getAvatar: function (user, force) {
-                force = force || false;
-                var query = new Parse.Query('_User');
-                return cachedParseQuery.use(query.equalTo('objectId', user.id).include('avatar'), 'first', force)
-                    .done(function (user) {
-                        return Parse.Promise.as(user.get('avatar'));
-                    });
-            },
-            loadCurrentUserWithAvatarUrl: function (force) {
-                force = force || false;
-                if (!Parse.User.current()) {
-                    return Parse.Promise.as();
-                }
-                return this.getAvatar(Parse.User.current(), force)
-                    .done(function (avatar) {
-                        Parse.User.current().avatarUrl = avatar ? avatar.get('image').url() : '/images/default-avatar.png';
-                        return Parse.Promise.as(Parse.User.current());
                     });
             }
         };

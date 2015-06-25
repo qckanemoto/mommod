@@ -23,9 +23,6 @@ angular.module('mommodApp')
                     delete $scope.form.password;
                 }
                 parse.updateUser($scope.form, $scope.file)
-                    .then(function () {
-                        return parse.loadCurrentUserWithAvatarUrl(true);
-                    })
                     .done(function (user) {
                         $scope.form.password = '';
                         $scope.file = null;
