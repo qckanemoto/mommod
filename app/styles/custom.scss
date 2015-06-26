@@ -50,6 +50,12 @@
     border-radius: 50px
 }
 
+ul.nav.navbar-nav {
+    .notify {
+        font-weight: bold;
+    }
+}
+
 form {
     .form-label.required {
         &:after {

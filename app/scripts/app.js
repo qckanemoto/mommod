@@ -40,6 +40,10 @@ angular
                 templateUrl: 'views/account.html',
                 controller: 'AccountCtrl'
             })
+            .when('/notifications', {
+                templateUrl: 'views/notifications.html',
+                controller: 'NotificationsCtrl'
+            })
             .otherwise({
                 redirectTo: '/'
             })
@@ -91,7 +95,7 @@ angular
             };
         }
     ])
-    .run(['$rootScope', '$timeout', function ($rootScope, $timeout) {
+    .run(['$rootScope', '$timeout', 'parse', function ($rootScope, $timeout, parse) {
         // extend Parse.User first of all.
         Parse.User.extend({
             getDisplayName: function () {
@@ -102,8 +106,19 @@ angular
             }
         });
 
+        // automatically refresh $rootScope models after location is changed.
         $rootScope.$on('$locationChangeSuccess', function () {
             $rootScope.currentUser = Parse.User.current();
+            if (Parse.User.current()) {
+                parse.getNotifications().done(function (notifications) {
+                    $rootScope.notifications = _.groupBy(notifications, function (notification) {
+                        return notification.get('read') ? 'read' : 'unread';
+                    });
+                    $timeout();
+                });
+            } else {
+                $rootScope.notifications = null;
+            }
             $timeout();
         });
     }])

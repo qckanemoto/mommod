@@ -47,6 +47,7 @@
                 <li><a ng-href="#/new"><i class="fa fa-plus"></i> New topic</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                <li><a ng-class="{ notify: notifications.unread.length }" ng-href="#/notifications"><i class="fa fa-bell{{ notifications.unread.length ? '' : '-o' }}"></i> {{ notifications.unread.length }}</a></li>
                 <li class="dropdown">
                     <a ng-href="" class="dropdown-toggle clickable" data-toggle="dropdown">
                         <img class="nav-avatar" ng-src="{{ currentUser.getAvatarUrl() }}" /> {{ currentUser.getDisplayName() }} <i class="caret"></i>
@@ -120,6 +121,7 @@
 <script src="scripts/controllers/topic.js"></script>
 <script src="scripts/controllers/joiners.js"></script>
 <script src="scripts/controllers/account.js"></script>
+<script src="scripts/controllers/notifications.js"></script>
 <script src="scripts/services.js"></script>
 <script src="scripts/directives.js"></script>
 <!-- endbuild -->

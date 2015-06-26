@@ -2,6 +2,17 @@
 
 angular.module('mommodApp')
 
+    // constants.
+    .constant('constants', function () {
+        return {
+            notificationType: {
+                mentioned: 'NOTIFICATION_TYPE_MENTIONED',
+                starred: 'NOTIFICATION_TYPE_STARRED',
+                invited: 'NOTIFICATION_TYPE_INVITED'
+            }
+        };
+    })
+
     // assert signed in.
     .factory('assertSignedIn', ['$location', function ($location) {
         return function () {
@@ -39,7 +50,7 @@ angular.module('mommodApp')
     }])
 
     // api access to parse.com.
-    .factory('parse', ['cachedParseQuery', function (cachedParseQuery) {
+    .factory('parse', ['cachedParseQuery', 'constants', function (cachedParseQuery, constants) {
         return {
             getTopics: function (force) {
                 force = force || false;
@@ -244,6 +255,10 @@ angular.module('mommodApp')
                         );
                     })
                     .done(function (topic, user) {
+                        // save notification.
+                        var message = Parse.User.current().getDisplayName() +  ' invited you to the topic #' + topic.id + ' "' + topic.get('title') + '".';
+                        that.addNotification(user, message, '#/topic/' + topic.id);
+
                         return Parse.Promise.when(
                             Parse.Promise.as(user),
                             that.getJoiners(topic, true)    // update joiner list.
@@ -283,6 +298,27 @@ angular.module('mommodApp')
                     .done(function () {
                         return user.save();
                     });
+            },
+            getNotifications: function (force) {
+                force = force || false;
+                var query = new Parse.Query('Notification');
+                return cachedParseQuery.use(query.equalTo('user', Parse.User.current()).descending('createdAt'), 'find', force);
+            },
+            addNotification: function (user, message, link) {
+                var notification = new Parse.Object('Notification');
+                return notification
+                    .set('user', user)
+                    .set('message', message)
+                    .set('link', link)
+                    .set('type', constants.notificationType.invited)
+                    .set('read', false)
+                    .save();
+            },
+            updateNotification: function (notification, form) {
+                _.pairs(form).forEach(function (pair) {
+                    notification.set(pair[0], pair[1]);
+                });
+                return notification.save();
             }
         };
     }])
