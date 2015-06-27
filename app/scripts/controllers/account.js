@@ -8,30 +8,39 @@ angular.module('mommodApp')
             assertSignedIn();
 
             $scope.user = Parse.User.current();
-            $scope.file = null;
+            $scope.avatarFile = null;
 
             $scope.form = {
-                username: Parse.User.current().get('username'),
-                email: Parse.User.current().get('email'),
-                displayName: Parse.User.current().get('displayName'),
-                password: ''
+                profile: {
+                    username: Parse.User.current().get('username'),
+                    email: Parse.User.current().get('email'),
+                    displayName: Parse.User.current().get('displayName'),
+                    password: ''
+                },
+                setting: {}
             };
 
-            $scope.updateAccount = function () {
+            // get setting.
+            parse.getSetting(Parse.User.current())
+                .done(function (setting) {
+                    $scope.form.setting.notification = setting.get('notification');
+                    $timeout();
+                });
+
+            $scope.updateProfile = function () {
                 $rootScope.spinner = true;
-                if ($scope.form.password == '') {
-                    delete $scope.form.password;
+                if ($scope.form.profile.password == '') {
+                    delete $scope.form.profile.password;
                 }
-                parse.updateUser($scope.form, $scope.file)
-                    .done(function (user) {
-                        $scope.form.password = '';
-                        $scope.file = null;
+                parse.updateUser($scope.form.profile, $scope.avatarFile)
+                    .done(function () {
+                        $scope.form.profile.password = '';
+                        $scope.avatarFile = null;
                         ngToast.create({
                             className: 'success',
-                            content: 'Account is successfully updated.',
+                            content: 'Profile is successfully updated.',
                             timeout: 3000
                         });
-                        $rootScope.currentUser = user;
                         $rootScope.spinner = false;
                         $timeout();
                     })
@@ -39,8 +48,26 @@ angular.module('mommodApp')
                         ngToast.create('[' + error.code + '] ' + error.message);
                         $rootScope.spinner = false;
                         $timeout();
+                    });
+            };
+
+            $scope.saveSetting = function () {
+                $rootScope.spinner = true;
+                parse.saveSetting($scope.form.setting)
+                    .done(function () {
+                        ngToast.create({
+                            className: 'success',
+                            content: 'Setting is successfully updated.',
+                            timeout: 3000
+                        });
+                        $rootScope.spinner = false;
+                        $timeout();
                     })
-                ;
+                    .fail(function (error) {
+                        ngToast.create('[' + error.code + '] ' + error.message);
+                        $rootScope.spinner = false;
+                        $timeout();
+                    });
             };
         }
     ])

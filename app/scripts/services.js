@@ -203,7 +203,6 @@ angular.module('mommodApp')
                 acl.setPublicWriteAccess(false);
                 acl.setReadAccess(Parse.User.current().id, true);
                 acl.setWriteAccess(Parse.User.current().id, true);
-
                 var star = new Parse.Object('Star');
                 return star
                     .set('user', Parse.User.current())
@@ -299,6 +298,32 @@ angular.module('mommodApp')
                         return user.save();
                     });
             },
+            getSetting: function (user, force) {
+                force = force || false;
+                var query = new Parse.Query('Setting');
+                return cachedParseQuery.use(query.equalTo('user', Parse.User.current()), 'first', force);
+
+            },
+            saveSetting: function (form) {
+                return this.getSetting(form.user)
+                    .done(function (setting) {
+                        if (!setting) {
+                            setting = new Parse.Object('Setting');
+                            var acl = new Parse.ACL();
+                            acl.setPublicReadAccess(false);
+                            acl.setPublicWriteAccess(false);
+                            acl.setReadAccess(Parse.User.current().id, true);
+                            acl.setWriteAccess(Parse.User.current().id, true);
+                            setting
+                                .setACL(acl)
+                                .set('user', Parse.User.current());
+                        }
+                        _.pairs(form).forEach(function (pair) {
+                            setting.set(pair[0], pair[1]);
+                        });
+                        return setting.save();
+                    });
+            },
             getNotifications: function (force) {
                 force = force || false;
                 var query = new Parse.Query('Notification');
@@ -306,12 +331,18 @@ angular.module('mommodApp')
             },
             addNotification: function (user, message, link) {
                 var notification = new Parse.Object('Notification');
+                var acl = new Parse.ACL();
+                acl.setPublicReadAccess(false);
+                acl.setPublicWriteAccess(false);
+                acl.setReadAccess(Parse.User.current().id, true);
+                acl.setWriteAccess(Parse.User.current().id, true);
                 return notification
                     .set('user', user)
                     .set('message', message)
                     .set('link', link)
                     .set('type', constants.notificationType.invited)
                     .set('read', false)
+                    .setACL(acl)
                     .save();
             },
             updateNotification: function (notification, form) {

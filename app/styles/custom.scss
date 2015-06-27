@@ -56,8 +56,12 @@ ul.nav.navbar-nav {
     }
 }
 
+.tab-content {
+    margin: 1em 0;
+}
+
 form {
-    .form-label.required {
+    .control-label.required {
         &:after {
             content: "*";
             color: #d00;
